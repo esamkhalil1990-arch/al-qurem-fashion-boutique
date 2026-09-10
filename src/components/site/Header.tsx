@@ -31,6 +31,8 @@ export function Header() {
     };
   }, [open]);
 
+  const onDark = !scrolled;
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
@@ -41,10 +43,14 @@ export function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <a href="#home" className="flex flex-col leading-tight">
-          <span className="font-display text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+          <span
+            className={`font-display text-lg font-semibold tracking-tight sm:text-xl ${
+              onDark ? "text-ivory" : "text-foreground"
+            }`}
+          >
             {t("القرم للألبسة", "AL-Qurem Fashion")}
           </span>
-          <span className="eyebrow text-[0.6rem]">
+          <span className={`eyebrow text-[0.6rem] ${onDark ? "text-ivory/70" : ""}`}>
             {t("المقابلين · عمّان", "Al-Muqabalain · Amman")}
           </span>
         </a>
@@ -54,7 +60,11 @@ export function Header() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className="text-sm text-muted-foreground transition-colors hover:text-primary"
+              className={`text-sm transition-colors ${
+                onDark
+                  ? "text-ivory/85 hover:text-ivory"
+                  : "text-muted-foreground hover:text-primary"
+              }`}
             >
               {t(item.ar, item.en)}
             </a>
@@ -62,32 +72,37 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center border border-border text-xs">
-            <button
-              type="button"
-              onClick={() => setLang("ar")}
-              aria-pressed={lang === "ar"}
-              className={`px-2.5 py-1.5 transition-colors ${
-                lang === "ar" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              }`}
-            >
-              AR
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              aria-pressed={lang === "en"}
-              className={`px-2.5 py-1.5 transition-colors ${
-                lang === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              }`}
-            >
-              EN
-            </button>
+          <div
+            className={`flex items-center border text-xs ${
+              onDark ? "border-ivory/40" : "border-border"
+            }`}
+          >
+            {(["ar", "en"] as const).map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLang(code)}
+                aria-pressed={lang === code}
+                className={`px-2.5 py-1.5 transition-colors ${
+                  lang === code
+                    ? "bg-primary text-primary-foreground"
+                    : onDark
+                      ? "text-ivory/80 hover:text-ivory"
+                      : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {code.toUpperCase()}
+              </button>
+            ))}
           </div>
 
           <a
             href={telHref}
-            className="inline-flex items-center gap-2 border border-primary px-3 py-1.5 text-xs text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            className={`inline-flex items-center gap-2 border px-3 py-1.5 text-xs transition-colors ${
+              onDark
+                ? "border-ivory/50 text-ivory hover:bg-ivory hover:text-ink"
+                : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            }`}
             aria-label={t("اتصل بنا", "Call us")}
           >
             <Phone className="h-4 w-4" aria-hidden="true" />
@@ -97,7 +112,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="p-1.5 text-foreground lg:hidden"
+            className={`p-1.5 lg:hidden ${onDark ? "text-ivory" : "text-foreground"}`}
             aria-label={t("فتح القائمة", "Open menu")}
           >
             <Menu className="h-6 w-6" aria-hidden="true" />

@@ -16,7 +16,7 @@ export function Hero() {
         height={1280}
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-ink/55" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/65 to-ink/45" />
 
       <div className="relative mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-5 pt-28 pb-20 sm:px-8">
         <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000">

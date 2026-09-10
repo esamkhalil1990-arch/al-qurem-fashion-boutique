@@ -1,0 +1,146 @@
+import { useEffect, useState } from "react";
+import { Menu, Phone, X } from "lucide-react";
+import { useLanguage } from "@/lib/language";
+import { telHref } from "@/lib/site-data";
+
+const NAV = [
+  { id: "home", ar: "الرئيسية", en: "Home" },
+  { id: "categories", ar: "الأقسام", en: "Categories" },
+  { id: "offers", ar: "العروض", en: "Offers" },
+  { id: "about", ar: "عن الفرع", en: "About" },
+  { id: "location", ar: "الموقع", en: "Location" },
+  { id: "contact", ar: "تواصل معنا", en: "Contact" },
+];
+
+export function Header() {
+  const { lang, setLang, t } = useLanguage();
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border bg-background/95 py-3 backdrop-blur-sm"
+          : "border-b border-transparent py-5"
+      }`}
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
+        <a href="#home" className="flex flex-col leading-tight">
+          <span className="font-display text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+            {t("القرم للألبسة", "AL-Qurem Fashion")}
+          </span>
+          <span className="eyebrow text-[0.6rem]">
+            {t("المقابلين · عمّان", "Al-Muqabalain · Amman")}
+          </span>
+        </a>
+
+        <nav className="hidden items-center gap-8 lg:flex" aria-label={t("التنقل", "Main")}>
+          {NAV.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className="text-sm text-muted-foreground transition-colors hover:text-primary"
+            >
+              {t(item.ar, item.en)}
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center border border-border text-xs">
+            <button
+              type="button"
+              onClick={() => setLang("ar")}
+              aria-pressed={lang === "ar"}
+              className={`px-2.5 py-1.5 transition-colors ${
+                lang === "ar" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              }`}
+            >
+              AR
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              aria-pressed={lang === "en"}
+              className={`px-2.5 py-1.5 transition-colors ${
+                lang === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              }`}
+            >
+              EN
+            </button>
+          </div>
+
+          <a
+            href={telHref}
+            className="inline-flex items-center gap-2 border border-primary px-3 py-1.5 text-xs text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            aria-label={t("اتصل بنا", "Call us")}
+          >
+            <Phone className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t("اتصل بنا", "Call Us")}</span>
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="p-1.5 text-foreground lg:hidden"
+            aria-label={t("فتح القائمة", "Open menu")}
+          >
+            <Menu className="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            aria-label={t("إغلاق القائمة", "Close menu")}
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-ink/50"
+          />
+          <div className="absolute inset-y-0 end-0 w-[78%] max-w-xs bg-background p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="font-display text-base font-semibold">
+                {t("القرم للألبسة", "AL-Qurem Fashion")}
+              </span>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label={t("إغلاق القائمة", "Close menu")}
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+            <nav className="mt-10 flex flex-col gap-6" aria-label={t("التنقل", "Mobile")}>
+              {NAV.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={() => setOpen(false)}
+                  className="text-lg text-foreground transition-colors hover:text-primary"
+                >
+                  {t(item.ar, item.en)}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}

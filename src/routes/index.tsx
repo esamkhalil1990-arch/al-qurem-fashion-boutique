@@ -1,24 +1,73 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LanguageProvider } from "@/lib/language";
+import { ADDRESS_EN, MAPS_URL } from "@/lib/site-data";
+import { Header } from "@/components/site/Header";
+import { Hero } from "@/components/site/Hero";
+import { Categories } from "@/components/site/Categories";
+import { Offers } from "@/components/site/Offers";
+import { About } from "@/components/site/About";
+import { Location } from "@/components/site/Location";
+import { Social } from "@/components/site/Social";
+import { Contact } from "@/components/site/Contact";
+import { Footer } from "@/components/site/Footer";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const TITLE = "AL-Qurem Fashion القرم للألبسة | Al-Muqabalain, Amman";
+const DESCRIPTION =
+  "AL-Qurem Fashion — القرم للألبسة: men's, women's, kids' clothing and pajamas on Al-Hurriya Street, Al-Muqabalain, Amman.";
+
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+      { property: "og:locale", content: "ar_JO" },
+      { property: "og:locale:alternate", content: "en_US" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ClothingStore",
+          name: "AL-Qurem Fashion",
+          alternateName: "القرم للألبسة",
+          slogan: "جودة نلبسها... ثقة تدوم",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Al-Hurriya Street, next to Al-Ostoura for Permanent Offers",
+            addressLocality: "Al-Muqabalain, Amman",
+            addressCountry: "JO",
+          },
+          areaServed: "Amman, Jordan",
+          hasMap: MAPS_URL,
+          description: ADDRESS_EN,
+        }),
+      },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <LanguageProvider>
+      <Header />
+      <main>
+        <Hero />
+        <Categories />
+        <Offers />
+        <About />
+        <Location />
+        <Social />
+        <Contact />
+      </main>
+      <Footer />
+    </LanguageProvider>
   );
 }

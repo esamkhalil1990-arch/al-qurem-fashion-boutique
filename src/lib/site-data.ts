@@ -8,14 +8,14 @@
 export const MAPS_URL = "https://maps.app.goo.gl/PUrVxKPikmSRssNu6";
 
 /** [EDITABLE — أضف رقم الهاتف / Add phone number] e.g. "+96279XXXXXXX" */
-export const PHONE_NUMBER = "";
+export const PHONE_NUMBER: string = "";
 
 /** [EDITABLE — أضف رقم الواتساب / Add WhatsApp number] digits only, e.g. "96279XXXXXXX" */
-export const WHATSAPP_NUMBER = "";
+export const WHATSAPP_NUMBER: string = "";
 
 /** [EDITABLE — أضف ساعات العمل / Add opening hours] e.g. "Sat–Thu 10:00 AM–10:00 PM" */
-export const OPENING_HOURS_AR = "";
-export const OPENING_HOURS_EN = "";
+export const OPENING_HOURS_AR: string = "";
+export const OPENING_HOURS_EN: string = "";
 
 /** [EDITABLE — https://facebook.com/REPLACE_ME] */
 export const FACEBOOK_URL = "https://facebook.com/REPLACE_ME";

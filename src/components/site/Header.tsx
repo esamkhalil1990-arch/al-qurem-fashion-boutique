@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import { telHref } from "@/lib/site-data";
+import { ArabicLogo } from "./ArabicLogo";
 
 const NAV = [
   { id: "home", ar: "الرئيسية", en: "Home" },
@@ -42,16 +43,21 @@ export function Header() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
-        <a href="#home" className="flex flex-col leading-tight">
-          <span
-            className={`font-display text-lg font-semibold tracking-tight sm:text-xl ${
-              onDark ? "text-ivory" : "text-foreground"
-            }`}
-          >
-            {t("القرم للألبسة", "AL-Qurem Fashion")}
-          </span>
-          <span className={`eyebrow text-[0.6rem] ${onDark ? "text-ivory/70" : ""}`}>
-            {t("المقابلين · عمّان", "Al-Muqabalain · Amman")}
+        <a href="#home" className="flex items-center gap-3 leading-tight">
+          <ArabicLogo
+            className={`h-10 w-[68px] shrink-0 ${onDark ? "text-gold" : "text-primary"}`}
+          />
+          <span className="flex flex-col">
+            <span
+              className={`font-display text-lg font-semibold tracking-tight sm:text-xl ${
+                onDark ? "text-ivory" : "text-foreground"
+              }`}
+            >
+              {t("القرم للألبسة", "AL-Qurem Fashion")}
+            </span>
+            <span className={`eyebrow text-[0.6rem] ${onDark ? "text-ivory/70" : ""}`}>
+              {t("المقابلين · عمّان", "Al-Muqabalain · Amman")}
+            </span>
           </span>
         </a>
 

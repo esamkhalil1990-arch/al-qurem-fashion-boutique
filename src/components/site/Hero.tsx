@@ -1,6 +1,6 @@
 import { useLanguage } from "@/lib/language";
 import { ArabicLogo } from "./ArabicLogo";
-import { OPENING_HOURS, PHONE_NUMBER, telHref } from "@/lib/site-data";
+import { OPENING_HOURS, PHONE_DISPLAY, telHref } from "@/lib/site-data";
 
 export function Hero() {
   const { t } = useLanguage();
@@ -59,7 +59,7 @@ export function Hero() {
             className="border border-ivory/60 px-7 py-3.5 text-sm tracking-wide text-ivory transition-colors hover:bg-ivory hover:text-ink"
             dir="ltr"
           >
-            {PHONE_NUMBER}
+            <bdi>{PHONE_DISPLAY}</bdi>
           </a>
         </div>
 

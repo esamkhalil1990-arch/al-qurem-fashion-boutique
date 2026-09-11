@@ -5,7 +5,7 @@ import {
   ADDRESS_EN,
   MAPS_URL,
   OPENING_HOURS,
-  PHONE_NUMBER,
+  PHONE_DISPLAY,
   telHref,
 } from "@/lib/site-data";
 import { Reveal } from "./Section";
@@ -67,7 +67,7 @@ export function Location() {
                   dir="ltr"
                   className="mt-1 inline-block text-muted-foreground transition-colors hover:text-primary"
                 >
-                  {PHONE_NUMBER}
+                  <bdi>{PHONE_DISPLAY}</bdi>
                 </a>
               </div>
             </div>

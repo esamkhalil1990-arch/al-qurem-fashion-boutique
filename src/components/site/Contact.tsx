@@ -4,7 +4,7 @@ import {
   FACEBOOK_URL,
   INSTAGRAM_URL,
   MAPS_URL,
-  PHONE_NUMBER,
+  PHONE_DISPLAY,
   WHATSAPP_NUMBER,
   telHref,
   whatsappHref,
@@ -38,7 +38,7 @@ export function Contact() {
             <Phone className="h-4 w-4" aria-hidden="true" />
             <span>{t("اتصل بنا", "Call Us")}</span>
             <span dir="ltr" className="opacity-90">
-              {PHONE_NUMBER}
+              <bdi>{PHONE_DISPLAY}</bdi>
             </span>
           </a>
           <a

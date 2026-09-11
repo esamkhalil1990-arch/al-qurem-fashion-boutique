@@ -10,6 +10,7 @@ export const MAPS_URL = "https://maps.app.goo.gl/PUrVxKPikmSRssNu6";
 /** Verified shop phone number (local + international dialling form). */
 export const PHONE_NUMBER: string = "0782116684";
 export const PHONE_NUMBER_INTL: string = "+962782116684";
+export const PHONE_DISPLAY: string = "078 211 6684";
 
 /** [EDITABLE — أضف رقم الواتساب / Add WhatsApp number] digits only, e.g. "96279XXXXXXX" */
 export const WHATSAPP_NUMBER: string = "";

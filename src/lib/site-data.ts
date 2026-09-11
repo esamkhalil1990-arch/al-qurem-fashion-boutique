@@ -7,15 +7,48 @@
 
 export const MAPS_URL = "https://maps.app.goo.gl/PUrVxKPikmSRssNu6";
 
-/** [EDITABLE — أضف رقم الهاتف / Add phone number] e.g. "+96279XXXXXXX" */
-export const PHONE_NUMBER: string = "";
+/** Verified shop phone number (local + international dialling form). */
+export const PHONE_NUMBER: string = "0782116684";
+export const PHONE_NUMBER_INTL: string = "+962782116684";
 
 /** [EDITABLE — أضف رقم الواتساب / Add WhatsApp number] digits only, e.g. "96279XXXXXXX" */
 export const WHATSAPP_NUMBER: string = "";
 
-/** [EDITABLE — أضف ساعات العمل / Add opening hours] e.g. "Sat–Thu 10:00 AM–10:00 PM" */
-export const OPENING_HOURS_AR: string = "";
-export const OPENING_HOURS_EN: string = "";
+/** Verified opening hours. */
+export type OpeningHoursRow = {
+  daysAr: string;
+  daysEn: string;
+  timeAr: string;
+  timeEn: string;
+};
+
+export const OPENING_HOURS: OpeningHoursRow[] = [
+  {
+    daysAr: "السبت – الخميس",
+    daysEn: "Saturday – Thursday",
+    timeAr: "11:00 صباحًا – 11:00 مساءً",
+    timeEn: "11:00 AM – 11:00 PM",
+  },
+  {
+    daysAr: "الجمعة",
+    daysEn: "Friday",
+    timeAr: "3:00 عصرًا – 11:00 مساءً",
+    timeEn: "3:00 PM – 11:00 PM",
+  },
+];
+
+export const OPENING_HOURS_AR: string = OPENING_HOURS.map(
+  (r) => `${r.daysAr}: ${r.timeAr}`,
+).join(" · ");
+export const OPENING_HOURS_EN: string = OPENING_HOURS.map(
+  (r) => `${r.daysEn}: ${r.timeEn}`,
+).join(" · ");
+
+/** Schema.org openingHours strings. */
+export const OPENING_HOURS_SCHEMA = [
+  "Sa-Th 11:00-23:00",
+  "Fr 15:00-23:00",
+];
 
 /** [EDITABLE — https://facebook.com/REPLACE_ME] */
 export const FACEBOOK_URL = "https://facebook.com/REPLACE_ME";
@@ -23,7 +56,9 @@ export const FACEBOOK_URL = "https://facebook.com/REPLACE_ME";
 /** [EDITABLE — https://instagram.com/REPLACE_ME] */
 export const INSTAGRAM_URL = "https://instagram.com/REPLACE_ME";
 
-export const telHref = PHONE_NUMBER ? `tel:${PHONE_NUMBER.replace(/\s/g, "")}` : MAPS_URL;
+export const telHref = PHONE_NUMBER
+  ? `tel:${PHONE_NUMBER_INTL.replace(/\s/g, "")}`
+  : MAPS_URL;
 export const whatsappHref = WHATSAPP_NUMBER
   ? `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}`
   : MAPS_URL;

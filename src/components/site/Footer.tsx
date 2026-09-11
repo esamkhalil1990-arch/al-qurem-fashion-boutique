@@ -2,6 +2,7 @@ import { Facebook, Instagram } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import {
   ADDRESS_AR,
+  OPENING_HOURS,
   ADDRESS_EN,
   FACEBOOK_URL,
   INSTAGRAM_URL,
@@ -84,6 +85,13 @@ export function Footer() {
               </span>
             )}
           </address>
+          <ul className="mt-4 space-y-1 text-sm text-ivory/70">
+            {OPENING_HOURS.map((row) => (
+              <li key={row.daysEn}>
+                {t(row.daysAr, row.daysEn)} · {t(row.timeAr, row.timeEn)}
+              </li>
+            ))}
+          </ul>
           <div className="mt-5 flex gap-3">
             <a
               href={FACEBOOK_URL}

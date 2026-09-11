@@ -36,7 +36,10 @@ export function Contact() {
             className="inline-flex items-center gap-2 bg-primary px-7 py-3.5 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <Phone className="h-4 w-4" aria-hidden="true" />
-            {t("اتصل بنا", "Call Us")}
+            <span>{t("اتصل بنا", "Call Us")}</span>
+            <span dir="ltr" className="opacity-90">
+              {PHONE_NUMBER}
+            </span>
           </a>
           <a
             href={whatsappHref}
@@ -58,13 +61,8 @@ export function Contact() {
           </a>
         </Reveal>
 
-        {(!PHONE_NUMBER || !WHATSAPP_NUMBER) && (
+        {!WHATSAPP_NUMBER && (
           <Reveal className="mt-6 flex flex-col items-center gap-2">
-            {!PHONE_NUMBER && (
-              <p className="placeholder-tag">
-                {t("[قابل للتعديل — أضف رقم الهاتف]", "[EDITABLE — Add phone number]")}
-              </p>
-            )}
             {!WHATSAPP_NUMBER && (
               <p className="placeholder-tag">
                 {t("[قابل للتعديل — أضف رقم الواتساب]", "[EDITABLE — Add WhatsApp number]")}

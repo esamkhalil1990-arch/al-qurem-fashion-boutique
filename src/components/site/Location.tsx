@@ -1,11 +1,12 @@
-import { Clock, MapPin, Navigation } from "lucide-react";
+import { Clock, MapPin, Navigation, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import {
   ADDRESS_AR,
   ADDRESS_EN,
   MAPS_URL,
-  OPENING_HOURS_AR,
-  OPENING_HOURS_EN,
+  OPENING_HOURS,
+  PHONE_DISPLAY,
+  telHref,
 } from "@/lib/site-data";
 import { Reveal } from "./Section";
 
@@ -15,7 +16,6 @@ const EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
 
 export function Location() {
   const { t } = useLanguage();
-  const hours = t(OPENING_HOURS_AR, OPENING_HOURS_EN);
 
   return (
     <section id="location" className="bg-secondary py-24 sm:py-32">
@@ -44,16 +44,31 @@ export function Location() {
                 <h3 className="font-display text-base font-medium">
                   {t("ساعات العمل", "Opening hours")}
                 </h3>
-                {hours ? (
-                  <p className="mt-1 text-muted-foreground">{hours}</p>
-                ) : (
-                  <p className="placeholder-tag mt-2">
-                    {t(
-                      "[قابل للتعديل — أضف ساعات العمل، مثال: السبت–الخميس 10:00 ص – 10:00 م]",
-                      "[EDITABLE — Add opening hours, e.g. Sat–Thu 10:00 AM–10:00 PM]",
-                    )}
-                  </p>
-                )}
+                <dl className="mt-3 divide-y divide-border border-y border-border">
+                  {OPENING_HOURS.map((row) => (
+                    <div
+                      key={row.daysEn}
+                      className="flex items-baseline justify-between gap-6 py-2.5"
+                    >
+                      <dt className="text-sm text-foreground">{t(row.daysAr, row.daysEn)}</dt>
+                      <dd className="text-sm text-muted-foreground">{t(row.timeAr, row.timeEn)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <Phone className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <div>
+                <h3 className="font-display text-base font-medium">{t("الهاتف", "Phone")}</h3>
+                <a
+                  href={telHref}
+                  dir="ltr"
+                  className="mt-1 inline-block text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <bdi>{PHONE_DISPLAY}</bdi>
+                </a>
               </div>
             </div>
           </div>

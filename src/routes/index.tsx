@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LanguageProvider } from "@/lib/language";
-import { ADDRESS_EN, MAPS_URL } from "@/lib/site-data";
+import {
+  ADDRESS_EN,
+  MAPS_URL,
+  OPENING_HOURS_SCHEMA,
+  PHONE_NUMBER_INTL,
+} from "@/lib/site-data";
 import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
 import { Categories } from "@/components/site/Categories";
@@ -45,6 +50,8 @@ export const Route = createFileRoute("/")({
             addressLocality: "Al-Muqabalain, Amman",
             addressCountry: "JO",
           },
+          telephone: PHONE_NUMBER_INTL,
+          openingHours: OPENING_HOURS_SCHEMA,
           areaServed: "Amman, Jordan",
           hasMap: MAPS_URL,
           description: ADDRESS_EN,

@@ -74,8 +74,8 @@
 }
 
 html[lang="ar"] {
-  --font-body: "Tajawal", system-ui, sans-serif;
-  --font-heading: "Tajawal", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
+  --font-heading: "Cairo", "Tajawal", system-ui, sans-serif;
 }
 
 @layer base {
@@ -104,10 +104,37 @@ html[lang="ar"] {
     line-height: 1.2;
   }
 
+  html[lang="ar"] body {
+    line-height: 1.95;
+    letter-spacing: 0;
+    font-size: 1.0625rem;
+    word-spacing: 0.02em;
+  }
+
   html[lang="ar"] h1,
   html[lang="ar"] h2,
-  html[lang="ar"] h3 {
-    line-height: 1.4;
+  html[lang="ar"] h3,
+  html[lang="ar"] h4 {
+    line-height: 1.55;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  html[lang="ar"] p {
+    max-width: 68ch;
+  }
+
+  html[lang="ar"] .eyebrow {
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    text-transform: none;
+  }
+
+  @media (max-width: 640px) {
+    html[lang="ar"] body {
+      font-size: 1rem;
+      line-height: 1.9;
+    }
   }
 
   :focus-visible {
@@ -155,5 +182,57 @@ html[lang="ar"] {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* ---- Arabic wordmark "القرم" ---- */
+.logo-lettering {
+  font-family: "Aref Ruqaa", "Amiri", "Cairo", serif;
+  font-weight: 700;
+  font-size: 168px;
+  letter-spacing: 0;
+}
+
+.logo-wipe {
+  transform-box: fill-box;
+  transform-origin: right center;
+}
+
+.logo-is-writing .logo-wipe {
+  transform: scaleX(0);
+  animation: logo-write 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.25s forwards;
+}
+
+.logo-is-writing .logo-flourish {
+  stroke-dasharray: 480;
+  stroke-dashoffset: 480;
+  animation: logo-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) 1.5s forwards;
+  opacity: 0;
+}
+
+@keyframes logo-write {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes logo-draw {
+  0% {
+    stroke-dashoffset: 480;
+    opacity: 0.75;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.75;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-is-writing .logo-wipe,
+  .logo-is-writing .logo-flourish {
+    animation: none;
+    transform: scaleX(1);
+    stroke-dashoffset: 0;
+    opacity: 0.75;
   }
 }

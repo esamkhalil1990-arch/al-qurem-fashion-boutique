@@ -2,10 +2,11 @@ import { Facebook, Instagram } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import {
   ADDRESS_AR,
+  OPENING_HOURS,
   ADDRESS_EN,
   FACEBOOK_URL,
   INSTAGRAM_URL,
-  PHONE_NUMBER,
+  PHONE_DISPLAY,
   telHref,
 } from "@/lib/site-data";
 
@@ -74,16 +75,17 @@ export function Footer() {
           <h2 className="eyebrow text-ivory/50">{t("تواصل", "Contact")}</h2>
           <address className="mt-4 space-y-3 text-sm not-italic text-ivory/75">
             <p>{t(ADDRESS_AR, ADDRESS_EN)}</p>
-            {PHONE_NUMBER ? (
-              <a href={telHref} className="block transition-colors hover:text-ivory">
-                {PHONE_NUMBER}
-              </a>
-            ) : (
-              <span className="placeholder-tag bg-ivory/10 text-ivory">
-                {t("[قابل للتعديل — أضف رقم الهاتف]", "[EDITABLE — Add phone number]")}
-              </span>
-            )}
+            <a href={telHref} dir="ltr" className="block transition-colors hover:text-ivory">
+              <bdi>{PHONE_DISPLAY}</bdi>
+            </a>
           </address>
+          <ul className="mt-4 space-y-1 text-sm text-ivory/70">
+            {OPENING_HOURS.map((row) => (
+              <li key={row.daysEn}>
+                {t(row.daysAr, row.daysEn)} · {t(row.timeAr, row.timeEn)}
+              </li>
+            ))}
+          </ul>
           <div className="mt-5 flex gap-3">
             <a
               href={FACEBOOK_URL}

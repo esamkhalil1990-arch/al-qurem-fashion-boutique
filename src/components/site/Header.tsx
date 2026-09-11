@@ -45,9 +45,9 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <a href="#home" className="flex items-center gap-3 leading-tight">
           <ArabicLogo
-            className={`h-10 w-[68px] shrink-0 ${onDark ? "text-gold" : "text-primary"}`}
+            className={`h-11 w-[78px] shrink-0 ${onDark ? "text-gold" : "text-primary"}`}
           />
-          <span className="flex flex-col">
+          <span className="hidden flex-col sm:flex">
             <span
               className={`font-display text-lg font-semibold tracking-tight sm:text-xl ${
                 onDark ? "text-ivory" : "text-foreground"

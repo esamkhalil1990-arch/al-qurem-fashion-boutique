@@ -1,4 +1,5 @@
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/lib/language";
 import {
   ADDRESS_AR,
@@ -8,6 +9,7 @@ import {
   INSTAGRAM_URL,
   PHONE_DISPLAY,
   telHref,
+  whatsappHref,
 } from "@/lib/site-data";
 
 const NAV = [
@@ -20,11 +22,19 @@ const NAV = [
 ];
 
 const CATS = [
-  { ar: "رجالي", en: "Men" },
-  { ar: "نسائي", en: "Women" },
-  { ar: "أطفال", en: "Kids" },
-  { ar: "بجامات", en: "Pajamas" },
-  { ar: "عروض", en: "Offers" },
+  { slug: "men", ar: "رجالي", en: "Men" },
+  { slug: "women", ar: "نسائي", en: "Women" },
+  { slug: "kids", ar: "أطفال", en: "Kids" },
+  { slug: "pajamas", ar: "بجامات", en: "Pajamas" },
+  { slug: "offers", ar: "عروض", en: "Offers" },
+];
+
+const POLICIES = [
+  { slug: "exchange", ar: "سياسة الاستبدال", en: "Exchange Policy" },
+  { slug: "return", ar: "سياسة الإرجاع", en: "Return Policy" },
+  { slug: "delivery", ar: "معلومات التوصيل", en: "Delivery Info" },
+  { slug: "privacy", ar: "سياسة الخصوصية", en: "Privacy Policy" },
+  { slug: "terms", ar: "الشروط والأحكام", en: "Terms & Conditions" },
 ];
 
 export function Footer() {

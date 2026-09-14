@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import men from "@/assets/cat-men.jpg";
 import women from "@/assets/cat-women.jpg";
 import kids from "@/assets/cat-kids.jpg";
@@ -7,11 +8,11 @@ import { useLanguage } from "@/lib/language";
 import { Reveal, SectionHeading } from "./Section";
 
 const CATEGORIES = [
-  { ar: "رجالي", en: "Men", img: men, altAr: "قمصان وجاكيت رجالي", altEn: "Men's shirts and jacket" },
-  { ar: "نسائي", en: "Women", img: women, altAr: "فستان وكارديغان نسائي", altEn: "Women's dress and cardigan" },
-  { ar: "أطفال", en: "Kids", img: kids, altAr: "ملابس أطفال ملوّنة", altEn: "Colourful kids' clothing" },
-  { ar: "بجامات", en: "Pajamas", img: pajamas, altAr: "طقم بجامة قطني مطوي", altEn: "Folded cotton pajama set" },
-  { ar: "عروض", en: "Offers", img: offers, altAr: "رف ملابس ضمن العروض", altEn: "Clothing rack of offers", featured: true },
+  { slug: "men", ar: "رجالي", en: "Men", img: men, altAr: "قمصان وجاكيت رجالي", altEn: "Men's shirts and jacket" },
+  { slug: "women", ar: "نسائي", en: "Women", img: women, altAr: "فستان وكارديغان نسائي", altEn: "Women's dress and cardigan" },
+  { slug: "kids", ar: "أطفال", en: "Kids", img: kids, altAr: "ملابس أطفال ملوّنة", altEn: "Colourful kids' clothing" },
+  { slug: "pajamas", ar: "بجامات", en: "Pajamas", img: pajamas, altAr: "طقم بجامة قطني مطوي", altEn: "Folded cotton pajama set" },
+  { slug: "offers", ar: "عروض", en: "Offers", img: offers, altAr: "رف ملابس ضمن العروض", altEn: "Clothing rack of offers", featured: true },
 ];
 
 export function Categories() {
@@ -37,25 +38,32 @@ export function Categories() {
               cat.featured ? "border-2 border-primary" : "border border-border"
             } ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
           >
-            <div className="aspect-[3/4] overflow-hidden bg-secondary">
-              <img
-                src={cat.img}
-                alt={t(cat.altAr, cat.altEn)}
-                loading="lazy"
-                width={900}
-                height={1200}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
-            {cat.featured && (
-              <span className="absolute top-3 end-3 bg-primary px-2.5 py-1 text-[0.65rem] tracking-widest text-primary-foreground uppercase">
-                {t("عروض", "Offers")}
-              </span>
-            )}
-            <h3 className="absolute bottom-4 start-4 font-display text-lg font-medium text-ivory">
-              {t(cat.ar, cat.en)}
-            </h3>
+            <Link
+              to="/category/$slug"
+              params={{ slug: cat.slug }}
+              aria-label={t(cat.ar, cat.en)}
+              className="block"
+            >
+              <div className="aspect-[3/4] overflow-hidden bg-secondary">
+                <img
+                  src={cat.img}
+                  alt={t(cat.altAr, cat.altEn)}
+                  loading="lazy"
+                  width={900}
+                  height={1200}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
+              {cat.featured && (
+                <span className="absolute top-3 end-3 bg-primary px-2.5 py-1 text-[0.65rem] tracking-widest text-primary-foreground uppercase">
+                  {t("عروض", "Offers")}
+                </span>
+              )}
+              <h3 className="absolute bottom-4 start-4 font-display text-lg font-medium text-ivory">
+                {t(cat.ar, cat.en)}
+              </h3>
+            </Link>
           </Reveal>
         ))}
       </ul>

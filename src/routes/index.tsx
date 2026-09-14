@@ -15,6 +15,7 @@ import { Location } from "@/components/site/Location";
 import { Social } from "@/components/site/Social";
 import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
+import { WhatsAppFloat } from "@/components/site/WhatsAppFloat";
 
 const TITLE = "AL-Qurem Fashion القرم للألبسة | Al-Muqabalain, Amman";
 const DESCRIPTION =
@@ -75,6 +76,7 @@ function Index() {
         <Contact />
       </main>
       <Footer />
+      <WhatsAppFloat />
     </LanguageProvider>
   );
 }

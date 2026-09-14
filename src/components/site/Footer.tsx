@@ -43,7 +43,7 @@ export function Footer() {
 
   return (
     <footer className="bg-ink py-16 text-ivory">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 md:grid-cols-2 lg:grid-cols-5">
         <div>
           <p className="font-display text-lg font-semibold">
             {t("القرم للألبسة", "AL-Qurem Fashion")}
@@ -64,7 +64,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2.5 text-sm">
             {NAV.map((item) => (
               <li key={item.id}>
-                <a href={`#${item.id}`} className="text-ivory/75 transition-colors hover:text-ivory">
+                <a href={`/#${item.id}`} className="text-ivory/75 transition-colors hover:text-ivory">
                   {t(item.ar, item.en)}
                 </a>
               </li>
@@ -72,14 +72,39 @@ export function Footer() {
           </ul>
         </nav>
 
-        <div>
+        <nav aria-label={t("الأقسام", "Categories")}>
           <h2 className="eyebrow text-ivory/50">{t("الأقسام", "Categories")}</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-ivory/75">
+          <ul className="mt-4 space-y-2.5 text-sm">
             {CATS.map((c) => (
-              <li key={c.en}>{t(c.ar, c.en)}</li>
+              <li key={c.en}>
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: c.slug }}
+                  className="text-ivory/75 transition-colors hover:text-ivory"
+                >
+                  {t(c.ar, c.en)}
+                </Link>
+              </li>
             ))}
           </ul>
-        </div>
+        </nav>
+
+        <nav aria-label={t("السياسات", "Policies")}>
+          <h2 className="eyebrow text-ivory/50">{t("السياسات", "Policies")}</h2>
+          <ul className="mt-4 space-y-2.5 text-sm">
+            {POLICIES.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  to="/policy/$slug"
+                  params={{ slug: p.slug }}
+                  className="text-ivory/75 transition-colors hover:text-ivory"
+                >
+                  {t(p.ar, p.en)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <div>
           <h2 className="eyebrow text-ivory/50">{t("تواصل", "Contact")}</h2>
@@ -87,6 +112,14 @@ export function Footer() {
             <p>{t(ADDRESS_AR, ADDRESS_EN)}</p>
             <a href={telHref} dir="ltr" className="block transition-colors hover:text-ivory">
               <bdi>{PHONE_DISPLAY}</bdi>
+            </a>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block transition-colors hover:text-ivory"
+            >
+              {t("واتساب", "WhatsApp")}
             </a>
           </address>
           <ul className="mt-4 space-y-1 text-sm text-ivory/70">
@@ -114,6 +147,15 @@ export function Footer() {
               className="border border-ivory/25 p-2.5 transition-colors hover:border-ivory"
             >
               <Instagram className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("واتساب", "WhatsApp")}
+              className="border border-ivory/25 p-2.5 transition-colors hover:border-ivory"
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
         </div>

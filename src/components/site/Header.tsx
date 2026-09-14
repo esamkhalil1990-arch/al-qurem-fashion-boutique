@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Menu, Phone, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Heart, Instagram, Menu, MessageCircle, Phone, ShoppingBag, User, X } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { telHref } from "@/lib/site-data";
+import { INSTAGRAM_URL, telHref, whatsappHref } from "@/lib/site-data";
+import { useSession } from "@/lib/shop";
 import { ArabicLogo } from "./ArabicLogo";
 
 const NAV = [
@@ -13,8 +15,9 @@ const NAV = [
   { id: "contact", ar: "تواصل معنا", en: "Contact" },
 ];
 
-export function Header() {
+export function Header({ solid = false }: { solid?: boolean }) {
   const { lang, setLang, t } = useLanguage();
+  const { user } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -32,7 +35,11 @@ export function Header() {
     };
   }, [open]);
 
-  const onDark = !scrolled;
+  const onDark = !scrolled && !solid;
+
+  const iconBtn = `p-2 transition-colors ${
+    onDark ? "text-ivory/85 hover:text-ivory" : "text-foreground/80 hover:text-primary"
+  }`;
 
   return (
     <header
@@ -77,7 +84,38 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={iconBtn}
+            aria-label={t("واتساب", "WhatsApp")}
+          >
+            <MessageCircle className="h-5 w-5" aria-hidden="true" />
+          </a>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${iconBtn} hidden sm:inline-flex`}
+            aria-label={t("إنستغرام", "Instagram")}
+          >
+            <Instagram className="h-5 w-5" aria-hidden="true" />
+          </a>
+          <Link to="/favorites" className={iconBtn} aria-label={t("المفضلة", "Favorites")}>
+            <Heart className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          <Link to="/cart" className={iconBtn} aria-label={t("سلة التسوق", "Cart")}>
+            <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          <Link
+            to="/login"
+            className={iconBtn}
+            aria-label={user ? t("حسابي", "My account") : t("تسجيل الدخول", "Sign in")}
+          >
+            <User className={`h-5 w-5 ${user ? "fill-current" : ""}`} aria-hidden="true" />
+          </Link>
           <div
             className={`flex items-center border text-xs ${
               onDark ? "border-ivory/40" : "border-border"

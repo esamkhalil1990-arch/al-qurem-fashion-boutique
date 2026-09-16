@@ -1,10 +1,10 @@
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import s1 from "@/assets/social-1.jpg";
 import s2 from "@/assets/social-2.jpg";
 import s3 from "@/assets/social-3.jpg";
 import s4 from "@/assets/social-4.jpg";
 import { useLanguage } from "@/lib/language";
-import { FACEBOOK_URL, INSTAGRAM_URL } from "@/lib/site-data";
+import { FACEBOOK_URL, INSTAGRAM_URL, whatsappHref } from "@/lib/site-data";
 import { Reveal, SectionHeading } from "./Section";
 
 const TILES = [
@@ -46,6 +46,15 @@ export function Social() {
         >
           <Instagram className="h-4 w-4" aria-hidden="true" />
           {t("إنستغرام", "Instagram")}
+        </a>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 border border-border px-6 py-3 text-sm transition-colors hover:border-primary hover:text-primary"
+        >
+          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+          {t("واتساب", "WhatsApp")}
         </a>
       </Reveal>
 

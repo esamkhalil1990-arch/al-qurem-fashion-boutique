@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Heart, Instagram, Menu, MessageCircle, Phone, ShoppingBag, User, X } from "lucide-react";
+import {
+  Heart,
+  Instagram,
+  Menu,
+  MessageCircle,
+  Phone,
+  Settings,
+  ShoppingBag,
+  User,
+  X,
+} from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import { useSettings } from "@/lib/settings";
 import { useSession } from "@/lib/shop";
+import { useIsAdmin } from "@/lib/admin";
 import { ArabicLogo } from "./ArabicLogo";
 
 const NAV = [
@@ -19,6 +30,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
   const { lang, setLang, t } = useLanguage();
   const { user } = useSession();
   const { instagram_url, telHref, whatsappHref } = useSettings();
+  const { data: isAdmin } = useIsAdmin(user?.id);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 

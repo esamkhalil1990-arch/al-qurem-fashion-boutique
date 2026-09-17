@@ -110,6 +110,11 @@ export function Header({ solid = false }: { solid?: boolean }) {
           <Link to="/cart" className={iconBtn} aria-label={t("سلة التسوق", "Cart")}>
             <ShoppingBag className="h-5 w-5" aria-hidden="true" />
           </Link>
+          {isAdmin && (
+            <Link to="/admin" className={iconBtn} aria-label={t("لوحة التحكم", "Admin")}>
+              <Settings className="h-5 w-5" aria-hidden="true" />
+            </Link>
+          )}
           <Link
             to="/login"
             className={iconBtn}

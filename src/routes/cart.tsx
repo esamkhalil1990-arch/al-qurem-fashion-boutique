@@ -24,6 +24,7 @@ function CartContent() {
   const { user, loading } = useSession();
   const { data: items = [], isLoading } = useCart(user?.id);
   const qc = useQueryClient();
+  const { whatsappHref } = useSettings();
 
   const updateQty = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {

@@ -6,7 +6,7 @@ import { useCart, useSession } from "@/lib/shop";
 import { supabase } from "@/integrations/supabase/client";
 import { PageLayout } from "@/components/site/PageLayout";
 import { CATEGORY_IMAGES } from "@/components/site/ProductCard";
-import { whatsappHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -24,6 +24,7 @@ function CartContent() {
   const { user, loading } = useSession();
   const { data: items = [], isLoading } = useCart(user?.id);
   const qc = useQueryClient();
+  const { whatsappHref } = useSettings();
 
   const updateQty = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {

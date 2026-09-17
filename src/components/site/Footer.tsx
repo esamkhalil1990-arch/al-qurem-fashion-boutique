@@ -1,16 +1,7 @@
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/lib/language";
-import {
-  ADDRESS_AR,
-  OPENING_HOURS,
-  ADDRESS_EN,
-  FACEBOOK_URL,
-  INSTAGRAM_URL,
-  PHONE_DISPLAY,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 
 const NAV = [
   { id: "home", ar: "الرئيسية", en: "Home" },
@@ -39,6 +30,16 @@ const POLICIES = [
 
 export function Footer() {
   const { t } = useLanguage();
+  const {
+    address_ar,
+    address_en,
+    facebook_url,
+    instagram_url,
+    opening_hours,
+    phone_display,
+    telHref,
+    whatsappHref,
+  } = useSettings();
   const year = new Date().getFullYear();
 
   return (
@@ -109,9 +110,9 @@ export function Footer() {
         <div>
           <h2 className="eyebrow text-ivory/50">{t("تواصل", "Contact")}</h2>
           <address className="mt-4 space-y-3 text-sm not-italic text-ivory/75">
-            <p>{t(ADDRESS_AR, ADDRESS_EN)}</p>
+            <p>{t(address_ar, address_en)}</p>
             <a href={telHref} dir="ltr" className="block transition-colors hover:text-ivory">
-              <bdi>{PHONE_DISPLAY}</bdi>
+              <bdi>{phone_display}</bdi>
             </a>
             <a
               href={whatsappHref}
@@ -123,7 +124,7 @@ export function Footer() {
             </a>
           </address>
           <ul className="mt-4 space-y-1 text-sm text-ivory/70">
-            {OPENING_HOURS.map((row) => (
+            {opening_hours.map((row) => (
               <li key={row.daysEn}>
                 {t(row.daysAr, row.daysEn)} · {t(row.timeAr, row.timeEn)}
               </li>
@@ -131,7 +132,7 @@ export function Footer() {
           </ul>
           <div className="mt-5 flex gap-3">
             <a
-              href={FACEBOOK_URL}
+              href={facebook_url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t("فيسبوك", "Facebook")}
@@ -140,7 +141,7 @@ export function Footer() {
               <Facebook className="h-4 w-4" aria-hidden="true" />
             </a>
             <a
-              href={INSTAGRAM_URL}
+              href={instagram_url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t("إنستغرام", "Instagram")}

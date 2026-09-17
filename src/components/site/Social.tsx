@@ -4,7 +4,7 @@ import s2 from "@/assets/social-2.jpg";
 import s3 from "@/assets/social-3.jpg";
 import s4 from "@/assets/social-4.jpg";
 import { useLanguage } from "@/lib/language";
-import { FACEBOOK_URL, INSTAGRAM_URL, whatsappHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 import { Reveal, SectionHeading } from "./Section";
 
 const TILES = [
@@ -16,6 +16,7 @@ const TILES = [
 
 export function Social() {
   const { t } = useLanguage();
+  const { facebook_url, instagram_url, whatsappHref } = useSettings();
 
   return (
     <section id="social" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
@@ -30,7 +31,7 @@ export function Social() {
 
       <Reveal className="mt-10 flex flex-wrap gap-3">
         <a
-          href={FACEBOOK_URL}
+          href={facebook_url}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 border border-border px-6 py-3 text-sm transition-colors hover:border-primary hover:text-primary"
@@ -39,7 +40,7 @@ export function Social() {
           {t("فيسبوك", "Facebook")}
         </a>
         <a
-          href={INSTAGRAM_URL}
+          href={instagram_url}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 border border-border px-6 py-3 text-sm transition-colors hover:border-primary hover:text-primary"

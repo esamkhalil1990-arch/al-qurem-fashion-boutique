@@ -1,13 +1,6 @@
 import { Clock, MapPin, Navigation, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import {
-  ADDRESS_AR,
-  ADDRESS_EN,
-  MAPS_URL,
-  OPENING_HOURS,
-  PHONE_DISPLAY,
-  telHref,
-} from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 import { Reveal } from "./Section";
 
 const EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
@@ -16,6 +9,8 @@ const EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
 
 export function Location() {
   const { t } = useLanguage();
+  const { address_ar, address_en, maps_url, opening_hours, phone_display, telHref } =
+    useSettings();
 
   return (
     <section id="location" className="bg-secondary py-24 sm:py-32">
@@ -31,9 +26,9 @@ export function Location() {
               <MapPin className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
               <div>
                 <h3 className="font-display text-base font-medium">{t("العنوان", "Address")}</h3>
-                <p className="mt-1 text-muted-foreground">{t(ADDRESS_AR, ADDRESS_EN)}</p>
+                <p className="mt-1 text-muted-foreground">{t(address_ar, address_en)}</p>
                 <p className="mt-1 text-sm text-muted-foreground" dir={t("ltr", "rtl")}>
-                  {t(ADDRESS_EN, ADDRESS_AR)}
+                  {t(address_en, address_ar)}
                 </p>
               </div>
             </div>
@@ -45,7 +40,7 @@ export function Location() {
                   {t("ساعات العمل", "Opening hours")}
                 </h3>
                 <dl className="mt-3 divide-y divide-border border-y border-border">
-                  {OPENING_HOURS.map((row) => (
+                  {opening_hours.map((row) => (
                     <div
                       key={row.daysEn}
                       className="flex items-baseline justify-between gap-6 py-2.5"
@@ -67,14 +62,14 @@ export function Location() {
                   dir="ltr"
                   className="mt-1 inline-block text-muted-foreground transition-colors hover:text-primary"
                 >
-                  <bdi>{PHONE_DISPLAY}</bdi>
+                  <bdi>{phone_display}</bdi>
                 </a>
               </div>
             </div>
           </div>
 
           <a
-            href={MAPS_URL}
+            href={maps_url}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-10 inline-flex items-center gap-2 bg-primary px-7 py-3.5 text-sm tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"

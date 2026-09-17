@@ -1,9 +1,10 @@
 import { MessageCircle } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { whatsappHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 
 export function WhatsAppFloat() {
   const { t } = useLanguage();
+  const { whatsappHref } = useSettings();
   return (
     <a
       href={whatsappHref}

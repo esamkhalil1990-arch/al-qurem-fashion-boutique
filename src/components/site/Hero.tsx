@@ -1,9 +1,10 @@
 import { useLanguage } from "@/lib/language";
 import { ArabicLogo } from "./ArabicLogo";
-import { OPENING_HOURS, PHONE_DISPLAY, telHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 
 export function Hero() {
   const { t } = useLanguage();
+  const { opening_hours, phone_display, telHref } = useSettings();
 
   return (
     <section
@@ -59,12 +60,12 @@ export function Hero() {
             className="border border-ivory/60 px-7 py-3.5 text-sm tracking-wide text-ivory transition-colors hover:bg-ivory hover:text-ink"
             dir="ltr"
           >
-            <bdi>{PHONE_DISPLAY}</bdi>
+            <bdi>{phone_display}</bdi>
           </a>
         </div>
 
         <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-ivory/70">
-          {OPENING_HOURS.map((row) => (
+          {opening_hours.map((row) => (
             <li key={row.daysEn}>
               <span className="text-ivory/90">{t(row.daysAr, row.daysEn)}</span>
               {" · "}

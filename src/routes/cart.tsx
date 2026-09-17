@@ -6,7 +6,7 @@ import { useCart, useSession } from "@/lib/shop";
 import { supabase } from "@/integrations/supabase/client";
 import { PageLayout } from "@/components/site/PageLayout";
 import { CATEGORY_IMAGES } from "@/components/site/ProductCard";
-import { whatsappHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({

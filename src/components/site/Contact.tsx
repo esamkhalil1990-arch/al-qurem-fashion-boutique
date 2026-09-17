@@ -1,18 +1,19 @@
 import { Facebook, Instagram, MessageCircle, Navigation, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import {
-  FACEBOOK_URL,
-  INSTAGRAM_URL,
-  MAPS_URL,
-  PHONE_DISPLAY,
-  WHATSAPP_NUMBER,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 import { Reveal } from "./Section";
 
 export function Contact() {
   const { t } = useLanguage();
+  const {
+    facebook_url,
+    instagram_url,
+    maps_url,
+    phone_display,
+    whatsapp_number,
+    telHref,
+    whatsappHref,
+  } = useSettings();
 
   return (
     <section id="contact" className="bg-secondary py-24 sm:py-32">
@@ -38,7 +39,7 @@ export function Contact() {
             <Phone className="h-4 w-4" aria-hidden="true" />
             <span>{t("اتصل بنا", "Call Us")}</span>
             <span dir="ltr" className="opacity-90">
-              <bdi>{PHONE_DISPLAY}</bdi>
+              <bdi>{phone_display}</bdi>
             </span>
           </a>
           <a
@@ -51,7 +52,7 @@ export function Contact() {
             {t("راسلنا واتساب", "WhatsApp Us")}
           </a>
           <a
-            href={MAPS_URL}
+            href={maps_url}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 border border-border px-7 py-3.5 text-sm transition-colors hover:border-primary hover:text-primary"
@@ -61,9 +62,9 @@ export function Contact() {
           </a>
         </Reveal>
 
-        {!WHATSAPP_NUMBER && (
+        {!whatsapp_number && (
           <Reveal className="mt-6 flex flex-col items-center gap-2">
-            {!WHATSAPP_NUMBER && (
+            {!whatsapp_number && (
               <p className="placeholder-tag">
                 {t("[قابل للتعديل — أضف رقم الواتساب]", "[EDITABLE — Add WhatsApp number]")}
               </p>
@@ -73,7 +74,7 @@ export function Contact() {
 
         <Reveal className="mt-10 flex justify-center gap-4">
           <a
-            href={FACEBOOK_URL}
+            href={facebook_url}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t("صفحتنا على فيسبوك", "Our Facebook page")}
@@ -82,7 +83,7 @@ export function Contact() {
             <Facebook className="h-5 w-5" aria-hidden="true" />
           </a>
           <a
-            href={INSTAGRAM_URL}
+            href={instagram_url}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t("صفحتنا على إنستغرام", "Our Instagram page")}

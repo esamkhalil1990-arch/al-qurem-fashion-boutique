@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, Instagram, Menu, MessageCircle, Phone, ShoppingBag, User, X } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { INSTAGRAM_URL, telHref, whatsappHref } from "@/lib/site-data";
+import { useSettings } from "@/lib/settings";
 import { useSession } from "@/lib/shop";
 import { ArabicLogo } from "./ArabicLogo";
 
@@ -18,6 +18,7 @@ const NAV = [
 export function Header({ solid = false }: { solid?: boolean }) {
   const { lang, setLang, t } = useLanguage();
   const { user } = useSession();
+  const { instagram_url, telHref, whatsappHref } = useSettings();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -95,7 +96,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
             <MessageCircle className="h-5 w-5" aria-hidden="true" />
           </a>
           <a
-            href={INSTAGRAM_URL}
+            href={instagram_url}
             target="_blank"
             rel="noopener noreferrer"
             className={`${iconBtn} hidden sm:inline-flex`}

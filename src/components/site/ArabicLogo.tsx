@@ -27,7 +27,7 @@ export function ArabicLogo({ className = "", animated = false, title = "القر
       <title id={titleId}>{title}</title>
       <defs>
         <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="520" height="260">
-          <rect className="logo-wipe" x="0" y="0" width="520" height="260" fill="white" />
+          <rect className="logo-wipe" x="163" y="0" width="194" height="260" fill="white" />
         </mask>
       </defs>
 

@@ -19,4 +19,4 @@ Future (not requested yet): admin dashboard to add products and edit hours/phone
 ## Official logo replacement
 - [x] Verify and obtain the authentic official store logo from the owner's share link and matching store profile photo.
 - [x] Replace header and opening-section marks with the same original asset, preserving static header and animated reveal.
-- [ ] Verify both placements, animation, and mobile layout.
+- [x] Verify both placements, progressive reveal and reduced-motion fallback, clean build, and mobile layout without overflow.

@@ -15,3 +15,7 @@
 - [x] Verify: build OK, typecheck OK, Playwright smoke test all pages, no console errors
 
 Future (not requested yet): admin dashboard to add products and edit hours/phone from the UI instead of config.
+
+## Official logo replacement
+- [ ] Verify and obtain the authentic official store logo.
+- [ ] Replace header and opening-section marks with the same original asset, preserving static header and animated reveal.

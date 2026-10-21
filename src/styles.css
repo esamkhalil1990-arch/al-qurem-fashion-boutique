@@ -233,6 +233,6 @@ html[lang="ar"] {
     animation: none;
     transform: scaleX(1);
     stroke-dashoffset: 0;
-    opacity: 0.75;
+    opacity: 1;
   }
 }

@@ -1,4 +1,5 @@
 import { useId } from "react";
+import officialLogo from "@/assets/alqurem-official-mark.png.asset.json";
 
 type ArabicLogoProps = {
   className?: string;
@@ -7,9 +8,8 @@ type ArabicLogoProps = {
 };
 
 /**
- * Original Arabic wordmark for "القرم".
- * Calligraphic (Diwani-inspired) feel, revealed with a right-to-left
- * "writing" wipe plus an underlying flourish that draws itself.
+ * Authentic Arabic mark cropped from the verified store's official profile photo.
+ * The reveal mask animates the original pixels, never a recreated wordmark.
  */
 export function ArabicLogo({ className = "", animated = false, title = "القرم" }: ArabicLogoProps) {
   const titleId = useId();
@@ -31,27 +31,14 @@ export function ArabicLogo({ className = "", animated = false, title = "القر
         </mask>
       </defs>
 
-      <g mask={`url(#${maskId})`}>
-        <text
-          x="260"
-          y="180"
-          textAnchor="middle"
-          direction="rtl"
-          className="logo-lettering"
-          fill="currentColor"
-        >
-          القرم
-        </text>
-      </g>
-
-      <path
-        d="M92 214C158 244 330 248 432 212C462 201 478 186 472 170"
-        className="logo-flourish"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-        opacity="0.75"
+      <image
+        href={officialLogo.url}
+        x="163"
+        y="2"
+        width="194"
+        height="256"
+        preserveAspectRatio="xMidYMid meet"
+        mask={animated ? `url(#${maskId})` : undefined}
       />
     </svg>
   );

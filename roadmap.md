@@ -17,5 +17,6 @@
 Future (not requested yet): admin dashboard to add products and edit hours/phone from the UI instead of config.
 
 ## Official logo replacement
-- [ ] Verify and obtain the authentic official store logo — blocked: Facebook content unavailable; awaiting an owner-provided original image or accessible verified official source.
-- [ ] Replace header and opening-section marks with the same original asset, preserving static header and animated reveal — blocked by missing authentic asset.
+- [x] Verify and obtain the authentic official store logo from the owner's share link and matching store profile photo.
+- [x] Replace header and opening-section marks with the same original asset, preserving static header and animated reveal.
+- [ ] Verify both placements, animation, and mobile layout.

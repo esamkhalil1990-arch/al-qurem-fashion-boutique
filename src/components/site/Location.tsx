@@ -60,7 +60,7 @@ export function Location() {
                 <a
                   href={telHref}
                   dir="ltr"
-                  className="mt-1 inline-block text-muted-foreground transition-colors hover:text-primary"
+                  className="mt-1 inline-block py-1.5 text-muted-foreground transition-colors hover:text-primary"
                 >
                   <bdi>{phone_display}</bdi>
                 </a>

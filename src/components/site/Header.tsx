@@ -111,7 +111,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
             href={instagram_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${iconBtn} hidden sm:inline-flex`}
+            className={`${iconBtn} max-sm:hidden`}
             aria-label={t("إنستغرام", "Instagram")}
           >
             <Instagram className="h-5 w-5" aria-hidden="true" />

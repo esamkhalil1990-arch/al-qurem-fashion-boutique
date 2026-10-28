@@ -17,9 +17,9 @@
 Future (not requested yet): admin dashboard to add products and edit hours/phone from the UI instead of config.
 
 ## Full-site responsive audit
-- [ ] Audit all shared sections, shop routes, account pages, policies, and authenticated admin forms.
-- [ ] Fix narrow-screen navigation, touch targets, text wrapping, grids, RTL, and viewport-safe forms.
-- [ ] Validate 320, 360, 375, 390, 414, 430px, tablet, desktop, both languages, and reduced motion with browser checks.
+- [x] Audit all shared sections, shop routes, account pages, policies, and authenticated admin forms.
+- [x] Fix narrow-screen navigation, touch targets, text wrapping, grids, RTL, and viewport-safe forms.
+- [x] Validate 320, 360, 375, 390, 414, 430px, tablet, desktop, both languages, and reduced motion with browser checks.
 
 ## Official logo replacement
 - [x] Verify and obtain the authentic official store logo from the owner's share link and matching store profile photo.

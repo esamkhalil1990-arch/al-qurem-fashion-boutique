@@ -55,7 +55,7 @@ function CategoryContent() {
   return (
     <div className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">
       <nav className="text-sm text-muted-foreground" aria-label="breadcrumb">
-        <Link to="/" className="hover:text-primary">{t("الرئيسية", "Home")}</Link>
+        <Link to="/" className="inline-block py-2 hover:text-primary">{t("الرئيسية", "Home")}</Link>
         <span className="mx-2">/</span>
         <span className="text-foreground">{t(cat.ar, cat.en)}</span>
       </nav>

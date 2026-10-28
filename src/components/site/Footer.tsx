@@ -62,10 +62,10 @@ export function Footer() {
 
         <nav aria-label={t("روابط الموقع", "Footer navigation")}>
           <h2 className="eyebrow text-ivory/50">{t("روابط", "Links")}</h2>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-4 space-y-1 text-sm">
             {NAV.map((item) => (
               <li key={item.id}>
-                <a href={`/#${item.id}`} className="text-ivory/75 transition-colors hover:text-ivory">
+                <a href={`/#${item.id}`} className="inline-block py-1.5 text-ivory/75 transition-colors hover:text-ivory">
                   {t(item.ar, item.en)}
                 </a>
               </li>
@@ -75,13 +75,13 @@ export function Footer() {
 
         <nav aria-label={t("الأقسام", "Categories")}>
           <h2 className="eyebrow text-ivory/50">{t("الأقسام", "Categories")}</h2>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-4 space-y-1 text-sm">
             {CATS.map((c) => (
               <li key={c.en}>
                 <Link
                   to="/category/$slug"
                   params={{ slug: c.slug }}
-                  className="text-ivory/75 transition-colors hover:text-ivory"
+                  className="inline-block py-1.5 text-ivory/75 transition-colors hover:text-ivory"
                 >
                   {t(c.ar, c.en)}
                 </Link>
@@ -92,13 +92,13 @@ export function Footer() {
 
         <nav aria-label={t("السياسات", "Policies")}>
           <h2 className="eyebrow text-ivory/50">{t("السياسات", "Policies")}</h2>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-4 space-y-1 text-sm">
             {POLICIES.map((p) => (
               <li key={p.slug}>
                 <Link
                   to="/policy/$slug"
                   params={{ slug: p.slug }}
-                  className="text-ivory/75 transition-colors hover:text-ivory"
+                  className="inline-block py-1.5 text-ivory/75 transition-colors hover:text-ivory"
                 >
                   {t(p.ar, p.en)}
                 </Link>
@@ -111,14 +111,14 @@ export function Footer() {
           <h2 className="eyebrow text-ivory/50">{t("تواصل", "Contact")}</h2>
           <address className="mt-4 space-y-3 text-sm not-italic text-ivory/75">
             <p>{t(address_ar, address_en)}</p>
-            <a href={telHref} dir="ltr" className="block transition-colors hover:text-ivory">
+            <a href={telHref} dir="ltr" className="block py-1.5 transition-colors hover:text-ivory">
               <bdi>{phone_display}</bdi>
             </a>
             <a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="block transition-colors hover:text-ivory"
+              className="block py-1.5 transition-colors hover:text-ivory"
             >
               {t("واتساب", "WhatsApp")}
             </a>

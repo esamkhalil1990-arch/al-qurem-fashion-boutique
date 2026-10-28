@@ -147,14 +147,14 @@ function LoginContent() {
         {mode === "login" ? (
           <>
             {t("ليس لديك حساب؟", "Don't have an account?")}{" "}
-            <button type="button" onClick={() => setMode("signup")} className="text-primary underline">
+            <button type="button" onClick={() => setMode("signup")} className="inline-flex min-h-10 items-center px-1 text-primary underline">
               {t("إنشاء حساب", "Create one")}
             </button>
           </>
         ) : (
           <>
             {t("لديك حساب؟", "Already have an account?")}{" "}
-            <button type="button" onClick={() => setMode("login")} className="text-primary underline">
+            <button type="button" onClick={() => setMode("login")} className="inline-flex min-h-10 items-center px-1 text-primary underline">
               {t("تسجيل الدخول", "Sign in")}
             </button>
           </>

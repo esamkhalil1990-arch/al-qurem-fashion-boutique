@@ -50,7 +50,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
 
   const onDark = !scrolled && !solid;
 
-  const iconBtn = `p-2 transition-colors ${
+  const iconBtn = `inline-flex h-10 w-10 items-center justify-center transition-colors ${
     onDark ? "text-ivory/85 hover:text-ivory" : "text-foreground/80 hover:text-primary"
   }`;
 
@@ -63,11 +63,11 @@ export function Header({ solid = false }: { solid?: boolean }) {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
-        <a href="#home" className="flex items-center gap-3 leading-tight">
+        <a href="/#home" className="flex min-w-0 shrink-0 items-center gap-3 leading-tight">
           <ArabicLogo
-            className={`h-11 w-[78px] shrink-0 ${onDark ? "text-gold" : "text-primary"}`}
+            className={`h-9 w-[64px] shrink-0 sm:h-11 sm:w-[78px] ${onDark ? "text-gold" : "text-primary"}`}
           />
-          <span className="hidden flex-col sm:flex">
+          <span className="hidden flex-col md:flex lg:hidden xl:flex">
             <span
               className={`font-display text-lg font-semibold tracking-tight sm:text-xl ${
                 onDark ? "text-ivory" : "text-foreground"
@@ -81,11 +81,11 @@ export function Header({ solid = false }: { solid?: boolean }) {
           </span>
         </a>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label={t("التنقل", "Main")}>
+        <nav className="hidden items-center gap-6 xl:flex" aria-label={t("التنقل", "Main")}>
           {NAV.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`/#${item.id}`}
               className={`text-sm transition-colors ${
                 onDark
                   ? "text-ivory/85 hover:text-ivory"
@@ -97,7 +97,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex min-w-0 items-center gap-0.5 sm:gap-2">
           <a
             href={whatsappHref}
             target="_blank"
@@ -111,7 +111,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
             href={instagram_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${iconBtn} hidden sm:inline-flex`}
+            className={`${iconBtn} max-sm:hidden`}
             aria-label={t("إنستغرام", "Instagram")}
           >
             <Instagram className="h-5 w-5" aria-hidden="true" />
@@ -135,7 +135,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
             <User className={`h-5 w-5 ${user ? "fill-current" : ""}`} aria-hidden="true" />
           </Link>
           <div
-            className={`flex items-center border text-xs ${
+            className={`hidden items-center border text-xs sm:flex ${
               onDark ? "border-ivory/40" : "border-border"
             }`}
           >
@@ -145,7 +145,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
                 type="button"
                 onClick={() => setLang(code)}
                 aria-pressed={lang === code}
-                className={`px-2.5 py-1.5 transition-colors ${
+                className={`min-h-10 px-3 transition-colors ${
                   lang === code
                     ? "bg-primary text-primary-foreground"
                     : onDark
@@ -160,7 +160,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
 
           <a
             href={telHref}
-            className={`inline-flex items-center gap-2 border px-3 py-1.5 text-xs transition-colors ${
+            className={`hidden min-h-10 items-center gap-2 border px-3 text-xs md:inline-flex transition-colors ${
               onDark
                 ? "border-ivory/50 text-ivory hover:bg-ivory hover:text-ink"
                 : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
@@ -168,13 +168,13 @@ export function Header({ solid = false }: { solid?: boolean }) {
             aria-label={t("اتصل بنا", "Call us")}
           >
             <Phone className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline">{t("اتصل بنا", "Call Us")}</span>
+            <span className="hidden lg:inline">{t("اتصل بنا", "Call Us")}</span>
           </a>
 
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className={`p-1.5 lg:hidden ${onDark ? "text-ivory" : "text-foreground"}`}
+            className={`inline-flex h-10 w-10 items-center justify-center xl:hidden ${onDark ? "text-ivory" : "text-foreground"}`}
             aria-label={t("فتح القائمة", "Open menu")}
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
@@ -183,14 +183,14 @@ export function Header({ solid = false }: { solid?: boolean }) {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           <button
             type="button"
             aria-label={t("إغلاق القائمة", "Close menu")}
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/50"
           />
-          <div className="absolute inset-y-0 end-0 w-[78%] max-w-xs bg-background p-6 shadow-xl">
+          <div className="absolute inset-y-0 end-0 flex w-[82%] max-w-xs flex-col overflow-y-auto bg-background p-6 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="font-display text-base font-semibold">
                 {t("القرم للألبسة", "AL-Qurem Fashion")}
@@ -199,6 +199,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("إغلاق القائمة", "Close menu")}
+                className="inline-flex h-10 w-10 items-center justify-center"
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
@@ -207,14 +208,45 @@ export function Header({ solid = false }: { solid?: boolean }) {
               {NAV.map((item) => (
                 <a
                   key={item.id}
-                  href={`#${item.id}`}
+                  href={`/#${item.id}`}
                   onClick={() => setOpen(false)}
-                  className="text-lg text-foreground transition-colors hover:text-primary"
+                  className="py-1 text-lg text-foreground transition-colors hover:text-primary"
                 >
                   {t(item.ar, item.en)}
                 </a>
               ))}
             </nav>
+            <div className="mt-10 flex flex-col gap-4 border-t border-border pt-6">
+              <div className="flex border border-border text-sm" role="group" aria-label={t("اللغة", "Language")}>
+                {(["ar", "en"] as const).map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setLang(code)}
+                    aria-pressed={lang === code}
+                    className={`min-h-11 flex-1 ${lang === code ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                  >
+                    {code === "ar" ? "العربية" : "English"}
+                  </button>
+                ))}
+              </div>
+              <a
+                href={telHref}
+                className="inline-flex min-h-11 items-center justify-center gap-2 border border-primary text-sm text-primary"
+              >
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                {t("اتصل بنا", "Call Us")}
+              </a>
+              <a
+                href={instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center gap-2 border border-border text-sm"
+              >
+                <Instagram className="h-4 w-4" aria-hidden="true" />
+                {t("إنستغرام", "Instagram")}
+              </a>
+            </div>
           </div>
         </div>
       )}

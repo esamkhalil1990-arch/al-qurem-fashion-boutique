@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_controls: {
+        Row: {
+          suspended: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          suspended?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          suspended?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -77,6 +95,133 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      order_events: {
+        Row: {
+          actor_id: string
+          created_at: string
+          id: string
+          note: string
+          order_id: string
+          status: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          id?: string
+          note?: string
+          order_id: string
+          status: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          id: string
+          image_url: string | null
+          name_ar: string
+          name_en: string
+          order_id: string
+          product_id: string | null
+          quantity: number
+          size: string | null
+          unit_price: number
+        }
+        Insert: {
+          id?: string
+          image_url?: string | null
+          name_ar: string
+          name_en: string
+          order_id: string
+          product_id?: string | null
+          quantity: number
+          size?: string | null
+          unit_price: number
+        }
+        Update: {
+          id?: string
+          image_url?: string | null
+          name_ar?: string
+          name_en?: string
+          order_id?: string
+          product_id?: string | null
+          quantity?: number
+          size?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          admin_notes: string
+          archived: boolean
+          created_at: string
+          customer_name: string
+          customer_notes: string
+          customer_phone: string
+          delivery_address: string
+          id: string
+          order_number: number
+          status: string
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string
+          archived?: boolean
+          created_at?: string
+          customer_name: string
+          customer_notes?: string
+          customer_phone: string
+          delivery_address: string
+          id?: string
+          order_number?: never
+          status?: string
+          total: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string
+          archived?: boolean
+          created_at?: string
+          customer_name?: string
+          customer_notes?: string
+          customer_phone?: string
+          delivery_address?: string
+          id?: string
+          order_number?: never
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       products: {
         Row: {
@@ -215,6 +360,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      checkout_cart: {
+        Args: {
+          _address: string
+          _name: string
+          _notes: string
+          _phone: string
+          _request_id: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -222,6 +377,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_account_active: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "staff"

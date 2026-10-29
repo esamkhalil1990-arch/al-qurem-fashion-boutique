@@ -43,7 +43,7 @@ export const readAccounts = createServerFn({ method: 'POST' }).middleware([requi
   ]);
   if (profiles.error || roles.error || controls.error || orders.error) throw new Error('Unable to load customer details');
   return users.map(u => ({ id: u.id, email: u.email ?? '', created_at: u.created_at, last_sign_in_at: u.last_sign_in_at ?? null,
-    full_name: profiles.data?.find(p => p.id === u.id)?.full_name ?? String(u.user_metadata?.full_name ?? ''),
+    full_name: profiles.data?.find(p => p.id === u.id)?.full_name ?? String(u.user_metadata?.['full_name'] ?? ''),
     phone: profiles.data?.find(p => p.id === u.id)?.phone ?? '',
     suspended: controls.data?.some(c => c.user_id === u.id && c.suspended) ?? false,
     role: roles.data?.some(r => r.user_id === u.id && r.role === 'admin') ? 'admin' : roles.data?.some(r => r.user_id === u.id && r.role === 'staff') ? 'staff' : 'customer',

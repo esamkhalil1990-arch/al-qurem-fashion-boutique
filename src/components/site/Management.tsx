@@ -33,7 +33,7 @@ export function OrdersList({ search, status, from, to, archive, setSearch }: { s
     <h1 className="font-display text-2xl">{t('الطلبات','Orders')}</h1>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       <label className={labelClass}>{t('رقم الطلب / الاسم / الهاتف','Order / name / phone')}<input className={fieldClass} value={search} onChange={e=>setSearch('q',e.target.value)} /></label>
-      <label className={labelClass}>{t('الحالة','Status')}<select className={fieldClass} value={status} onChange={e=>setSearch('status',e.target.value)}><option value="">{t('كل الحالات','All statuses')}</option>{statuses.map(s=><option key={s} value={s}>{t(statusAr[s],s.replaceAll('_',' '))}</option>)}</select></label>
+      <label className={labelClass}>{t('الحالة','Status')}<select className={fieldClass} value={status} onChange={e=>setSearch('status',e.target.value)}><option value="">{t('كل الحالات','All statuses')}</option>{statuses.map(s=><option key={s} value={s}>{t(statusAr[s] ?? s,s.replaceAll('_',' '))}</option>)}</select></label>
       <label className={labelClass}>{t('من تاريخ','From')}<input type="date" className={`${fieldClass} min-w-0`} value={from} onChange={e=>setSearch('from',e.target.value)}/></label>
       <label className={labelClass}>{t('إلى تاريخ','To')}<input type="date" className={`${fieldClass} min-w-0`} value={to} onChange={e=>setSearch('to',e.target.value)}/></label>
       <label className={labelClass}>{t('الأرشيف','Archive')}<select className={fieldClass} value={archive} onChange={e=>setSearch('archive',e.target.value)}><option value="active">{t('الحالية','Current')}</option><option value="archived">{t('المؤرشفة','Archived')}</option><option value="all">{t('الكل','All')}</option></select></label>
@@ -42,7 +42,7 @@ export function OrdersList({ search, status, from, to, archive, setSearch }: { s
     {!query.isLoading && !query.error && rows.length===0 && <p className="py-10 text-muted-foreground">{t('لا توجد طلبات مطابقة.','No matching orders.')}</p>}
     <ul className="divide-y divide-border">{rows.map(o=><li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-5">
       <div className="min-w-0 break-words"><Link className="inline-flex min-h-11 items-center font-medium text-primary underline" to="/admin/orders/$id" params={{id:o.id}}>#{o.order_number} · {o.customer_name}</Link><p dir="ltr" className="text-start text-sm text-muted-foreground">{o.customer_phone} · {o.created_at.slice(0,10)}</p></div>
-      <div><p>{t(statusAr[o.status],o.status.replaceAll('_',' '))}</p><p className="text-primary">{Number(o.total).toFixed(2)} {t('د.أ','JOD')}</p></div>
+      <div><p>{t(statusAr[o.status] ?? o.status,o.status.replaceAll('_',' '))}</p><p className="text-primary">{Number(o.total).toFixed(2)} {t('د.أ','JOD')}</p></div>
     </li>)}</ul>
   </section>;
 }
@@ -58,13 +58,13 @@ function OrderEditor({ order }: { order:Order }) {
   const [status,setStatus]=useState(order.status); const [notes,setNotes]=useState(order.admin_notes); const [archived,setArchived]=useState(order.archived);
   const mutation=useMutation({mutationFn:()=>save({data:{id:order.id,status:status as typeof statuses[number],admin_notes:notes,archived}}),onSuccess:()=>{qc.invalidateQueries({queryKey:['admin-orders']});qc.invalidateQueries({queryKey:['admin-accounts']});}});
   return <section className="space-y-7 min-w-0">
-    <Link to="/admin/orders" className="inline-flex min-h-11 items-center text-primary">{t('العودة للطلبات','Back to orders')}</Link>
+    <Link to="/admin/orders" search={{}} className="inline-flex min-h-11 items-center text-primary">{t('العودة للطلبات','Back to orders')}</Link>
     <h1 className="font-display text-2xl">{t('طلب','Order')} #{order.order_number}</h1>
     <dl className="grid gap-4 border-b border-border pb-6 sm:grid-cols-2">{[[t('العميل','Customer'),order.customer_name],[t('الهاتف','Phone'),order.customer_phone],[t('التوصيل / الاستلام','Delivery / pickup'),order.delivery_address],[t('ملاحظات العميل','Customer notes'),order.customer_notes],[t('التاريخ','Date'),new Date(order.created_at).toLocaleString()]].map(([k,v])=><div key={k}><dt className="text-sm text-muted-foreground">{k}</dt><dd className="break-words whitespace-pre-wrap">{v||'—'}</dd></div>)}</dl>
     <ul className="divide-y divide-border">{order.order_items.map(i=><li key={i.id} className="flex flex-wrap justify-between gap-3 py-4"><div className="min-w-0 break-words">{t(i.name_ar,i.name_en)}<p className="text-sm text-muted-foreground">{t('الكمية','Quantity')}: {i.quantity} · {t('المقاس','Size')}: {i.size||'—'}</p><p className="text-sm">{Number(i.unit_price).toFixed(2)} {t('د.أ للقطعة','JOD each')}</p></div><p>{(i.quantity*Number(i.unit_price)).toFixed(2)} {t('د.أ','JOD')}</p></li>)}</ul>
     <p className="text-xl font-semibold">{t('المجموع','Total')}: {Number(order.total).toFixed(2)} {t('د.أ','JOD')}</p>
     <form className="space-y-4 border-t border-border pt-6" onSubmit={e=>{e.preventDefault();mutation.mutate();}}>
-      <label className={labelClass}>{t('حالة الطلب','Order status')}<select className={fieldClass} value={status} onChange={e=>setStatus(e.target.value)}>{statuses.map(s=><option key={s} value={s}>{t(statusAr[s],s.replaceAll('_',' '))}</option>)}</select></label>
+      <label className={labelClass}>{t('حالة الطلب','Order status')}<select className={fieldClass} value={status} onChange={e=>setStatus(e.target.value)}>{statuses.map(s=><option key={s} value={s}>{t(statusAr[s] ?? s,s.replaceAll('_',' '))}</option>)}</select></label>
       <label className={labelClass}>{t('ملاحظات الإدارة','Admin notes')}<textarea className={fieldClass} rows={4} maxLength={4000} value={notes} onChange={e=>setNotes(e.target.value)}/></label>
       <label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={archived} onChange={e=>setArchived(e.target.checked)}/>{t('أرشفة الطلب','Archive order')}</label>
       <Button className="min-h-11" disabled={mutation.isPending} type="submit">{t('حفظ الطلب','Save order')}</Button>
@@ -94,7 +94,7 @@ function AccountEditor({ account }: { account:Account }) {
   const [form,setForm]=useState({id:account.id,email:account.email,full_name:account.full_name,phone:account.phone,suspended:account.suspended,role:account.role as 'customer'|'staff'|'admin'});
   const mutation=useMutation({mutationFn:()=>save({data:form}),onSuccess:()=>qc.invalidateQueries({queryKey:['admin-accounts']})});
   const resetMutation=useMutation({mutationFn:()=>reset({data:{id:account.id}})});
-  return <section className="space-y-6 min-w-0"><Link to="/admin/accounts" className="inline-flex min-h-11 items-center text-primary">{t('العودة للحسابات','Back to accounts')}</Link><h1 className="text-2xl font-display break-words">{account.full_name||account.email}</h1>
+  return <section className="space-y-6 min-w-0"><Link to="/admin/accounts" search={{}} className="inline-flex min-h-11 items-center text-primary">{t('العودة للحسابات','Back to accounts')}</Link><h1 className="text-2xl font-display break-words">{account.full_name||account.email}</h1>
     <p className="text-sm text-muted-foreground">{t('تاريخ التسجيل','Joined')}: {account.created_at.slice(0,10)}<br/>{t('آخر دخول','Last sign-in')}: {account.last_sign_in_at?new Date(account.last_sign_in_at).toLocaleString():'—'}</p>
     <form className="space-y-4" onSubmit={e=>{e.preventDefault(); if(window.confirm(t('حفظ تغييرات هذا الحساب؟','Save changes to this account?')))mutation.mutate();}}>
       {(['full_name','phone','email'] as const).map(k=><label key={k} className={labelClass}>{k==='full_name'?t('الاسم','Name'):k==='phone'?t('الهاتف','Phone'):t('البريد الإلكتروني','Email')}<input className={fieldClass} type={k==='email'?'email':'text'} dir={k==='full_name'?undefined:'ltr'} value={form[k]} onChange={e=>setForm({...form,[k]:e.target.value})}/></label>)}

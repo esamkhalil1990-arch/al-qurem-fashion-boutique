@@ -8,6 +8,7 @@ export function useIsAdmin(userId: string | undefined) {
     enabled: !!userId,
     staleTime: 30_000,
     queryFn: async () => {
+      if (!userId) return false;
       const read = async () => {
         const { data, error } = await supabase
           .from("user_roles")

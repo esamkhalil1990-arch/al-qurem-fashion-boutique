@@ -1,0 +1,36 @@
+CREATE TABLE public.account_controls (user_id uuid PRIMARY KEY, suspended boolean NOT NULL DEFAULT false, updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.account_controls TO authenticated; GRANT ALL ON public.account_controls TO service_role;
+ALTER TABLE public.account_controls ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own or admin account control read" ON public.account_controls FOR SELECT TO authenticated USING (auth.uid()=user_id OR public.has_role(auth.uid(),'admin'));
+CREATE FUNCTION public.is_account_active() RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT auth.uid() IS NOT NULL AND NOT EXISTS(SELECT 1 FROM public.account_controls WHERE user_id=auth.uid() AND suspended) $$;
+CREATE TABLE public.orders (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_number bigint GENERATED ALWAYS AS IDENTITY UNIQUE, user_id uuid NOT NULL, customer_name text NOT NULL, customer_phone text NOT NULL, delivery_address text NOT NULL, customer_notes text NOT NULL DEFAULT '', admin_notes text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','confirmed','preparing','out_for_delivery','completed','cancelled')), total numeric(12,2) NOT NULL, archived boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, UPDATE ON public.orders TO authenticated; GRANT ALL ON public.orders TO service_role;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Order owner or admin read" ON public.orders FOR SELECT TO authenticated USING(public.is_account_active() AND (user_id=auth.uid() OR public.has_role(auth.uid(),'admin')));
+CREATE POLICY "Admin update orders" ON public.orders FOR UPDATE TO authenticated USING(public.is_account_active() AND public.has_role(auth.uid(),'admin')) WITH CHECK(public.is_account_active() AND public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.order_items (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES public.orders(id), product_id uuid, name_ar text NOT NULL, name_en text NOT NULL, size text, quantity integer NOT NULL CHECK(quantity>0), unit_price numeric(12,2) NOT NULL CHECK(unit_price>=0), image_url text);
+GRANT SELECT ON public.order_items TO authenticated; GRANT ALL ON public.order_items TO service_role;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Read visible order items" ON public.order_items FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.orders WHERE id=order_id));
+CREATE TABLE public.order_events (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES public.orders(id), actor_id uuid NOT NULL, status text NOT NULL, note text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.order_events TO authenticated; GRANT ALL ON public.order_events TO service_role;
+ALTER TABLE public.order_events ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins read order history" ON public.order_events FOR SELECT TO authenticated USING(public.is_account_active() AND public.has_role(auth.uid(),'admin'));
+CREATE INDEX orders_customer ON public.orders(user_id,created_at DESC);
+CREATE INDEX orders_status_date ON public.orders(status,created_at DESC);
+CREATE FUNCTION public.checkout_cart(_name text,_phone text,_address text,_notes text,_request_id uuid) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+DECLARE oid uuid; amount numeric; BEGIN
+IF NOT public.is_account_active() THEN RAISE EXCEPTION 'Unauthorized'; END IF;
+PERFORM pg_advisory_xact_lock(hashtext(auth.uid()::text));
+SELECT id INTO oid FROM public.orders WHERE id=_request_id AND user_id=auth.uid(); IF oid IS NOT NULL THEN RETURN oid; END IF;
+IF length(trim(_name))<2 OR length(trim(_phone))<7 OR length(trim(_address))<3 OR length(_name)>150 OR length(_phone)>40 OR length(_address)>1000 OR length(_notes)>2000 THEN RAISE EXCEPTION 'Invalid delivery details'; END IF;
+IF NOT EXISTS(SELECT 1 FROM public.cart_items WHERE user_id=auth.uid()) THEN RAISE EXCEPTION 'Cart is empty'; END IF;
+IF EXISTS(SELECT 1 FROM public.cart_items c LEFT JOIN public.products p ON p.id=c.product_id WHERE c.user_id=auth.uid() AND (p.id IS NULL OR NOT p.is_active OR p.price<0 OR c.quantity<1 OR c.quantity>999)) THEN RAISE EXCEPTION 'Cart contains unavailable products or invalid quantities'; END IF;
+SELECT sum(p.price*c.quantity) INTO amount FROM public.cart_items c JOIN public.products p ON p.id=c.product_id WHERE c.user_id=auth.uid();
+INSERT INTO public.orders(id,user_id,customer_name,customer_phone,delivery_address,customer_notes,total) VALUES(_request_id,auth.uid(),trim(_name),trim(_phone),trim(_address),_notes,amount) RETURNING id INTO oid;
+INSERT INTO public.order_items(order_id,product_id,name_ar,name_en,size,quantity,unit_price,image_url) SELECT oid,p.id,p.name_ar,p.name_en,c.size,c.quantity,p.price,p.image_url FROM public.cart_items c JOIN public.products p ON p.id=c.product_id WHERE c.user_id=auth.uid();
+INSERT INTO public.order_events(order_id,actor_id,status) VALUES(oid,auth.uid(),'pending');
+DELETE FROM public.cart_items WHERE user_id=auth.uid(); RETURN oid; END $$;
+REVOKE ALL ON FUNCTION public.checkout_cart(text,text,text,text,uuid) FROM PUBLIC,anon; GRANT EXECUTE ON FUNCTION public.checkout_cart(text,text,text,text,uuid) TO authenticated;
+CREATE FUNCTION public.record_order_update() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN NEW.updated_at=now(); INSERT INTO public.order_events(order_id,actor_id,status,note) VALUES(NEW.id,auth.uid(),NEW.status,CASE WHEN OLD.archived IS DISTINCT FROM NEW.archived THEN 'Archive state changed' ELSE NEW.admin_notes END); RETURN NEW; END $$;
+CREATE TRIGGER order_update_history BEFORE UPDATE ON public.orders FOR EACH ROW EXECUTE FUNCTION public.record_order_update();

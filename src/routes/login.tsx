@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLanguage } from "@/lib/language";
 import { supabase } from "@/integrations/supabase/client";
 import { PageLayout } from "@/components/site/PageLayout";
@@ -17,7 +17,14 @@ export const Route = createFileRoute("/login")({
 function LoginContent() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange(event => {
+      if (event === 'PASSWORD_RECOVERY') setMode('reset');
+    });
+    if (window.location.hash.includes('type=recovery')) setMode('reset');
+    return () => data.subscription.unsubscribe();
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -29,7 +36,12 @@ function LoginContent() {
     setBusy(true);
     setMessage(null);
     try {
-      if (mode === "login") {
+      if (mode === 'reset') {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw error;
+        setMessage({ kind: 'ok', text: t('تم تغيير كلمة المرور','Password updated') });
+        setMode('login');
+      } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate({ to: "/" });
@@ -72,7 +84,7 @@ function LoginContent() {
   return (
     <div className="mx-auto max-w-md px-5 pb-24 sm:px-8">
       <h1 className="text-center font-display text-3xl font-semibold tracking-tight">
-        {mode === "login" ? t("تسجيل الدخول", "Sign In") : t("إنشاء حساب", "Create Account")}
+        {mode === 'reset' ? t('إعادة تعيين كلمة المرور','Reset password') : mode === "login" ? t("تسجيل الدخول", "Sign In") : t("إنشاء حساب", "Create Account")}
       </h1>
       <p className="mt-3 text-center text-sm text-muted-foreground">
         {t("ادخل بريدك الإلكتروني وكلمة المرور", "Enter your email and password")}
@@ -94,7 +106,7 @@ function LoginContent() {
             />
           </div>
         )}
-        <div>
+        {mode !== 'reset' && <div>
           <label htmlFor="email" className="mb-1.5 block text-sm">
             {t("البريد الإلكتروني", "Email")}
           </label>
@@ -107,7 +119,7 @@ function LoginContent() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
           />
-        </div>
+        </div>}
         <div>
           <label htmlFor="password" className="mb-1.5 block text-sm">
             {t("كلمة المرور", "Password")}
@@ -137,7 +149,7 @@ function LoginContent() {
         >
           {busy
             ? t("لحظات...", "One moment...")
-            : mode === "login"
+            : mode === 'reset' ? t('حفظ كلمة المرور','Save password') : mode === "login"
               ? t("دخول", "Sign In")
               : t("إنشاء الحساب", "Create Account")}
         </button>

@@ -8,6 +8,8 @@ import { PageLayout } from "./PageLayout";
 const TABS = [
   { to: "/admin", ar: "معلومات المحل", en: "Shop details" },
   { to: "/admin/products", ar: "المنتجات", en: "Products" },
+  { to: "/admin/orders", ar: "الطلبات", en: "Orders" },
+  { to: "/admin/accounts", ar: "الحسابات", en: "Accounts" },
 ] as const;
 
 /** Wraps admin pages: signs-in check + admin-role check + shared tab bar. */
@@ -49,7 +51,7 @@ export function AdminGate({ children }: { children: ReactNode }) {
   } else {
     body = (
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8">
-        <nav className="mb-10 flex gap-2 border-b border-border" aria-label={t("لوحة التحكم", "Admin")}>
+        <nav className="mb-10 flex flex-wrap gap-2 border-b border-border" aria-label={t("لوحة التحكم", "Admin")}>
           {TABS.map((tab) => (
             <Link
               key={tab.to}

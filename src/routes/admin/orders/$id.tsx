@@ -1,0 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { ManagementLayout, OrderDetail } from '@/components/site/Management';
+export const Route=createFileRoute('/admin/orders/$id')({ssr:false,head:()=>({meta:[{title:'Order details | AL-Qurem Fashion Admin'},{name:'description',content:'Manage an AL-Qurem Fashion order and delivery.'},{property:'og:title',content:'Order details | AL-Qurem Fashion Admin'},{property:'og:description',content:'Manage an AL-Qurem Fashion order and delivery.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary'},{name:'robots',content:'noindex'}]}),component:Page});
+function Page(){return <ManagementLayout><OrderDetail id={Route.useParams().id}/></ManagementLayout>;}

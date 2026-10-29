@@ -7,6 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageLayout } from "@/components/site/PageLayout";
 import { CATEGORY_IMAGES } from "@/components/site/ProductCard";
 import { useSettings } from "@/lib/settings";
+import { useState } from 'react';
+import { useServerFn } from '@tanstack/react-start';
+import { placeOrder } from '@/lib/management.functions';
+import { Button } from '@/components/ui/button';
+import { fieldClass } from '@/components/site/AdminGate';
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -25,6 +30,17 @@ function CartContent() {
   const { data: items = [], isLoading } = useCart(user?.id);
   const qc = useQueryClient();
   const { whatsappHref } = useSettings();
+  const submitOrder = useServerFn(placeOrder);
+  const [delivery, setDelivery] = useState({ name: '', phone: '', address: '', notes: '' });
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const checkout = useMutation({
+    mutationFn: async () => {
+      const id = requestId ?? crypto.randomUUID();
+      setRequestId(id);
+      return submitOrder({ data: { ...delivery, requestId: id } });
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['cart', user?.id] }); },
+  });
 
   const updateQty = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
@@ -63,14 +79,9 @@ function CartContent() {
 
   const total = items.reduce((sum, i) => sum + (i.products?.price ?? 0) * i.quantity, 0);
 
-  const orderText = items
-    .map((i) => {
-      const name = lang === "ar" ? i.products?.name_ar : i.products?.name_en;
-      return `- ${name} x${i.quantity} (${(i.products?.price ?? 0) * i.quantity} JOD)`;
-    })
-    .join("\n");
+  const orderText = checkout.data?.order_items.map(i => `- ${lang === 'ar' ? i.name_ar : i.name_en} x${i.quantity} (${i.unit_price} JOD)`).join('\n') ?? '';
   const checkoutUrl = `${whatsappHref}?text=${encodeURIComponent(
-    `${t("طلب جديد من الموقع:", "New order from the website:")}\n${orderText}\n${t("المجموع", "Total")}: ${total} JOD`,
+    `${t("طلب جديد من الموقع:", "New order from the website:")} #${checkout.data?.order_number}\n${orderText}\n${t("المجموع", "Total")}: ${checkout.data?.total} JOD\n${delivery.name} · ${delivery.phone}\n${delivery.address}`,
   )}`;
 
   return (
@@ -79,7 +90,13 @@ function CartContent() {
         {t("سلة التسوق", "Shopping Cart")}
       </h1>
 
-      {isLoading ? (
+      {checkout.data ? (
+        <div className="mt-8 space-y-4">
+          <p role="status">{t('تم تسجيل طلبك', 'Your order is recorded')} #{checkout.data.order_number}</p>
+          <p>{Number(checkout.data.total).toFixed(2)} {t('د.أ','JOD')}</p>
+          <Button asChild className="min-h-11 h-auto whitespace-normal"><a href={checkoutUrl} target="_blank" rel="noopener noreferrer">{t('متابعة التأكيد عبر واتساب','Continue confirmation via WhatsApp')}</a></Button>
+        </div>
+      ) : isLoading ? (
         <p className="mt-16 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>
       ) : items.length === 0 ? (
         <div className="mt-16 text-center">
@@ -138,14 +155,12 @@ function CartContent() {
               {t("المجموع:", "Total:")}{" "}
               <span className="font-semibold text-primary">{total.toFixed(2)} {t("د.أ", "JOD")}</span>
             </p>
-            <a
-              href={checkoutUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-primary px-8 py-3.5 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              {t("إتمام الطلب عبر واتساب", "Checkout via WhatsApp")}
-            </a>
+            <form className="w-full space-y-4" onSubmit={e=>{e.preventDefault();checkout.mutate();}}>
+              {(['name','phone','address'] as const).map(key=><label key={key} className="block text-sm">{key==='name'?t('اسم العميل','Customer name'):key==='phone'?t('رقم الهاتف','Phone number'):t('عنوان التوصيل أو الاستلام من المحل','Delivery address or pickup at shop')}<input required className={fieldClass} type={key==='phone'?'tel':'text'} minLength={key==='phone'?7:key==='name'?2:3} maxLength={key==='address'?1000:key==='name'?150:40} value={delivery[key]} onChange={e=>setDelivery({...delivery,[key]:e.target.value})}/></label>)}
+              <label className="block text-sm">{t('ملاحظات','Notes')}<textarea className={fieldClass} maxLength={2000} value={delivery.notes} onChange={e=>setDelivery({...delivery,notes:e.target.value})}/></label>
+              <Button className="min-h-11 h-auto whitespace-normal" disabled={checkout.isPending || updateQty.isPending} type="submit">{checkout.isPending?t('جارٍ تسجيل الطلب…','Recording order…'):t('تسجيل الطلب والمتابعة عبر واتساب','Place order and continue via WhatsApp')}</Button>
+              {checkout.error&&<p role="alert" className="text-destructive">{checkout.error.message}</p>}
+            </form>
             <p className="text-xs text-muted-foreground">
               {t(
                 "يُرسل طلبك إلى المحل عبر واتساب لتأكيد التوفر والاستلام.",

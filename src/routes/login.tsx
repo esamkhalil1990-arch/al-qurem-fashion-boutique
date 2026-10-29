@@ -17,7 +17,8 @@ export const Route = createFileRoute("/login")({
 function LoginContent() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  useState(() => { return null; });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");

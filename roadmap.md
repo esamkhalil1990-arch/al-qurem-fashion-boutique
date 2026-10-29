@@ -14,7 +14,11 @@
 - [x] Footer: policy links + WhatsApp
 - [x] Verify: build OK, typecheck OK, Playwright smoke test all pages, no console errors
 
-Future (not requested yet): admin dashboard to add products and edit hours/phone from the UI instead of config.
+## Order and account management
+- [ ] Persist real checkout orders with price snapshots and delivery details.
+- [ ] Add admin order search, details, status updates, notes and archiving.
+- [ ] Add real account search, profile editing, suspension and role management.
+- [ ] Validate administrative permissions, live flows and narrow-screen layouts.
 
 ## Full-site responsive audit
 - [x] Audit all shared sections, shop routes, account pages, policies, and authenticated admin forms.

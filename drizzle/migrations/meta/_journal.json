@@ -8,6 +8,13 @@
       "when": 1793257178280,
       "tag": "0000_order_tracking_and_account_controls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793398552550,
+      "tag": "0001_enforce_suspension_and_atomic_roles",
+      "breakpoints": true
     }
   ]
 }

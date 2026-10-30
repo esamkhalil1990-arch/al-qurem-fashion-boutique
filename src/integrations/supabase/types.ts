@@ -378,6 +378,10 @@ export type Database = {
         Returns: boolean
       }
       is_account_active: { Args: never; Returns: boolean }
+      set_customer_role: {
+        Args: { _role: string; _target: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "staff"

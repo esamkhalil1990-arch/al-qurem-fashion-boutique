@@ -15,10 +15,12 @@
 - [x] Verify: build OK, typecheck OK, Playwright smoke test all pages, no console errors
 
 ## Order and account management
-- [ ] Persist real checkout orders with price snapshots and delivery details.
-- [ ] Add admin order search, details, status updates, notes and archiving.
-- [ ] Add real account search, profile editing, suspension and role management.
-- [ ] Validate administrative permissions, live flows and narrow-screen layouts.
+- [x] Persist real checkout orders with price snapshots and delivery details.
+- [x] Add admin order search, details, status updates, notes and archiving.
+- [x] Add real account search, profile editing, suspension and role management.
+- [x] Validate real account search/save/read-back, self-suspension rejection, signed-out server rejection, order filter controls and 320–430/768/1280px layouts.
+- [ ] Validate order creation/status change with a real order: blocked because the store has no products or existing orders, and fabricated records were prohibited.
+- [ ] Validate another customer's permissions/suspension: blocked because no designated customer test account is available.
 
 ## Full-site responsive audit
 - [x] Audit all shared sections, shop routes, account pages, policies, and authenticated admin forms.

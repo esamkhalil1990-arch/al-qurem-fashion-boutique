@@ -13,6 +13,10 @@ export const Route = createFileRoute("/admin/products")({
     meta: [
       { title: "Products — لوحة التحكم | AL-Qurem Fashion" },
       { name: "description", content: "Add, edit and remove AL-Qurem Fashion products." },
+      { property: "og:title", content: "Products — لوحة التحكم | AL-Qurem Fashion" },
+      { property: "og:description", content: "Add, edit and remove AL-Qurem Fashion products." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

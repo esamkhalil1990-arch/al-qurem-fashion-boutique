@@ -9,6 +9,10 @@ export const Route = createFileRoute("/login")({
     meta: [
       { title: "Sign In — تسجيل الدخول | AL-Qurem Fashion" },
       { name: "description", content: "Sign in or create an account at AL-Qurem Fashion." },
+      { property: "og:title", content: "Sign In — تسجيل الدخول | AL-Qurem Fashion" },
+      { property: "og:description", content: "Sign in or create an account at AL-Qurem Fashion." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LoginPage,

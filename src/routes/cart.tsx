@@ -18,6 +18,10 @@ export const Route = createFileRoute("/cart")({
     meta: [
       { title: "Cart — سلة التسوق | AL-Qurem Fashion" },
       { name: "description", content: "Your shopping cart at AL-Qurem Fashion, Al-Muqabalain, Amman." },
+      { property: "og:title", content: "Cart — سلة التسوق | AL-Qurem Fashion" },
+      { property: "og:description", content: "Your shopping cart at AL-Qurem Fashion, Al-Muqabalain, Amman." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CartPage,

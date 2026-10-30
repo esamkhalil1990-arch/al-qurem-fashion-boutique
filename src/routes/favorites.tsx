@@ -9,6 +9,10 @@ export const Route = createFileRoute("/favorites")({
     meta: [
       { title: "Favorites — المفضلة | AL-Qurem Fashion" },
       { name: "description", content: "Your favorite items at AL-Qurem Fashion, Al-Muqabalain, Amman." },
+      { property: "og:title", content: "Favorites — المفضلة | AL-Qurem Fashion" },
+      { property: "og:description", content: "Your favorite items at AL-Qurem Fashion, Al-Muqabalain, Amman." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FavoritesPage,

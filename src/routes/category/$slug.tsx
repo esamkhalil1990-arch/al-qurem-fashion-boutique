@@ -21,6 +21,9 @@ export const Route = createFileRoute("/category/$slug")({
       meta: [
         { title },
         { name: "description", content: `Shop ${c?.en ?? ""} clothing at AL-Qurem Fashion, Al-Muqabalain, Amman.` },
+      { property: "og:description", content: `Shop ${c?.en ?? ""} clothing at AL-Qurem Fashion, Al-Muqabalain, Amman.` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
         { property: "og:title", content: title },
       ],
     };

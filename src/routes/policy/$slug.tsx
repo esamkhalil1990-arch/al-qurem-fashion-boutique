@@ -96,6 +96,10 @@ export const Route = createFileRoute("/policy/$slug")({
       meta: [
         { title },
         { name: "description", content: `${p?.titleEn ?? "Store policy"} — AL-Qurem Fashion, Al-Muqabalain, Amman.` },
+      { property: "og:title", content: title },
+      { property: "og:description", content: `${p?.titleEn ?? "Store policy"} — AL-Qurem Fashion, Al-Muqabalain, Amman.` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       ],
     };
   },

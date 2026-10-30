@@ -60,19 +60,15 @@ export const updateAccount = createServerFn({ method: 'POST' }).middleware([requ
   const { error: profileError } = await supabaseAdmin.from('profiles').upsert({ id: data.id, full_name: data.full_name, phone: data.phone });
   const { error: controlError } = await supabaseAdmin.from('account_controls').upsert({ user_id: data.id, suspended: data.suspended, updated_at: new Date().toISOString() });
   if (profileError || controlError) throw new Error('Account partially updated; refresh and retry.');
-  const { error: rolesError } = await supabaseAdmin.from('user_roles').delete().eq('user_id', data.id);
+  const { error: rolesError } = await context.supabase.rpc('set_customer_role', { _target: data.id, _role: data.role });
   if (rolesError) throw new Error('Unable to update roles');
-  if (data.role !== 'customer') {
-    const { error } = await supabaseAdmin.from('user_roles').insert({ user_id: data.id, role: data.role });
-    if (error) throw new Error('Unable to grant role');
-  }
   return { ok: true };
 });
 export const sendAccountReset = createServerFn({ method: 'POST' }).middleware([requireAdmin]).inputValidator(z.object({ id: z.string().uuid() })).handler(async ({ data }) => {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: result, error } = await supabaseAdmin.auth.admin.getUserById(data.id);
   if (error || !result.user?.email) throw new Error('Account not found');
-  const { error: sendError } = await supabaseAdmin.auth.resetPasswordForEmail(result.user.email);
+  const { error: sendError } = await supabaseAdmin.auth.resetPasswordForEmail(result.user.email, { redirectTo: 'https://alquremfashion.lovable.app/login' });
   if (sendError) throw new Error('Unable to send reset email');
   return { ok: true };
 });

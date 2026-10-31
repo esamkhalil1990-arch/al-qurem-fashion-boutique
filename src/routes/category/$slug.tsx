@@ -36,7 +36,7 @@ function CategoryContent() {
   const { t } = useLanguage();
   const { user } = useSession();
   const [sort, setSort] = useState("newest");
-  const { data: products = [], isLoading } = useProducts(slug, sort);
+  const { data: products = [], isLoading, error } = useProducts(slug, sort);
   const { data: favorites = [] } = useFavorites(user?.id);
   const favIds = new Set(favorites.map((f) => f.product_id));
 
@@ -81,7 +81,7 @@ function CategoryContent() {
         </label>
       </div>
 
-      {isLoading ? (
+      {error ? <p role="alert" className="mt-8 text-destructive">{t("تعذر تحميل المنتجات. حاول مرة أخرى.", "Unable to load products. Please try again.")}</p> : isLoading ? (
         <p className="mt-16 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>
       ) : products.length === 0 ? (
         <p className="mt-16 text-center text-muted-foreground">

@@ -3,6 +3,9 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useLanguage } from "@/lib/language";
 import { supabase } from "@/integrations/supabase/client";
 import { PageLayout } from "@/components/site/PageLayout";
+import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/shop";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -21,7 +24,9 @@ export const Route = createFileRoute("/login")({
 function LoginContent() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const { user } = useSession();
+  const qc = useQueryClient();
+  const [mode, setMode] = useState<"login" | "signup" | "reset" | "forgot">("login");
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(event => {
       if (event === 'PASSWORD_RECOVERY') setMode('reset');
@@ -40,7 +45,11 @@ function LoginContent() {
     setBusy(true);
     setMessage(null);
     try {
-      if (mode === 'reset') {
+      if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` });
+        if (error) throw error;
+        setMessage({ kind: 'ok', text: t('إذا كان البريد مسجلاً ستصلك رسالة لإعادة تعيين كلمة المرور.', 'If this email is registered, you will receive a password reset link.') });
+      } else if (mode === 'reset') {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
         setMessage({ kind: 'ok', text: t('تم تغيير كلمة المرور','Password updated') });
@@ -53,10 +62,10 @@ function LoginContent() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        if (data.user) {
+        if (data.user && data.session) {
           await supabase.from("profiles").upsert({ id: data.user.id, full_name: fullName });
         }
         if (data.session) {
@@ -85,13 +94,15 @@ function LoginContent() {
     }
   }
 
+  if (user && mode !== 'reset') return <div className="mx-auto max-w-md space-y-5 px-5 pb-24 sm:px-8"><h1 className="text-3xl font-display">{t('حسابي', 'My account')}</h1><p className="break-all" dir="ltr">{user.email}</p><Button asChild variant="outline"><a href="/">{t('تابع التسوق', 'Continue shopping')}</a></Button><Button disabled={busy} onClick={async () => { setBusy(true); await qc.cancelQueries(); qc.clear(); const { error } = await supabase.auth.signOut(); setBusy(false); if (error) { setMessage({kind:'error',text:t('تعذر تسجيل الخروج. حاول مرة أخرى.', 'Unable to sign out. Please try again.')}); return; } navigate({to:'/login',replace:true}); }}>{t('تسجيل الخروج', 'Sign out')}</Button>{message?.kind==='error' && <p role="alert" className="text-destructive">{message.text}</p>}</div>;
+
   return (
     <div className="mx-auto max-w-md px-5 pb-24 sm:px-8">
       <h1 className="text-center font-display text-3xl font-semibold tracking-tight">
-        {mode === 'reset' ? t('إعادة تعيين كلمة المرور','Reset password') : mode === "login" ? t("تسجيل الدخول", "Sign In") : t("إنشاء حساب", "Create Account")}
+        {mode === 'reset' || mode === 'forgot' ? t('إعادة تعيين كلمة المرور','Reset password') : mode === "login" ? t("تسجيل الدخول", "Sign In") : t("إنشاء حساب", "Create Account")}
       </h1>
       <p className="mt-3 text-center text-sm text-muted-foreground">
-        {t("ادخل بريدك الإلكتروني وكلمة المرور", "Enter your email and password")}
+        {mode==='forgot' ? t('البريد الإلكتروني', 'Email') : mode==='reset' ? t('كلمة المرور الجديدة', 'New password') : t("ادخل بريدك الإلكتروني وكلمة المرور", "Enter your email and password")}
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
@@ -124,7 +135,7 @@ function LoginContent() {
             className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
           />
         </div>}
-        <div>
+        {mode !== 'forgot' && <div>
           <label htmlFor="password" className="mb-1.5 block text-sm">
             {t("كلمة المرور", "Password")}
           </label>
@@ -138,7 +149,7 @@ function LoginContent() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
           />
-        </div>
+        </div>}
 
         {message && (
           <p className={`text-sm ${message.kind === "error" ? "text-destructive" : "text-primary"}`}>
@@ -146,18 +157,19 @@ function LoginContent() {
           </p>
         )}
 
-        <button
+        <Button
           type="submit"
           disabled={busy}
           className="w-full bg-primary px-6 py-3.5 text-sm text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
         >
           {busy
             ? t("لحظات...", "One moment...")
-            : mode === 'reset' ? t('حفظ كلمة المرور','Save password') : mode === "login"
+            : mode === 'forgot' ? t('إرسال رابط إعادة التعيين', 'Send reset link') : mode === 'reset' ? t('حفظ كلمة المرور','Save password') : mode === "login"
               ? t("دخول", "Sign In")
               : t("إنشاء الحساب", "Create Account")}
-        </button>
+        </Button>
       </form>
+      {mode==='login' && <Button variant="link" className="mt-3 min-h-11" onClick={() => {setMode('forgot');setMessage(null);}}>{t('نسيت كلمة المرور؟', 'Forgot password?')}</Button>}
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {mode === "login" ? (

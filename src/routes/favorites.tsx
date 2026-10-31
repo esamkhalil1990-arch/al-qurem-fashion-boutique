@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useLanguage } from "@/lib/language";
-import { useFavorites, useSession } from "@/lib/shop";
+import { useFavorites, useSession, type Product } from "@/lib/shop";
 import { PageLayout } from "@/components/site/PageLayout";
 import { ProductCard } from "@/components/site/ProductCard";
 
@@ -46,7 +46,7 @@ function FavoritesContent() {
     );
   }
 
-  const products = favorites.map((f) => f.products).filter((p) => p !== null && p.is_active);
+  const products = favorites.map((f) => f.products).filter((p): p is Product => p !== null && p.is_active);
 
   return (
     <div className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">

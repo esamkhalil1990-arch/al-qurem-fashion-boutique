@@ -97,7 +97,7 @@ export function ProductCard({
           disabled={addToCart.isPending || !canAdd}
           onClick={() => {
             if (requireLogin()) return;
-            addToCart.mutate({ productId: product.id, size: size || undefined });
+            addToCart.mutate({ productId: product.id, ...(size ? { size } : {}) });
           }}
           className="mt-3 h-auto min-h-11 w-full gap-2 whitespace-normal rounded-none border-primary px-2 py-2.5 text-primary hover:bg-primary hover:text-primary-foreground"
         >

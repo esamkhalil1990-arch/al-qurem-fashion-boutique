@@ -1,9 +1,10 @@
 # Roadmap — Port Bolt version into Lovable project
 
 ## Seamless website and admin review
-- [ ] Audit customer journeys and all existing admin controls; repair confirmed defects without redesigning the site.
-- [ ] Verify real admin access, account/settings save-and-read-back, public navigation, and narrow-screen behavior.
-- [ ] Report editing limitations and optional improvements for the owner's decision; do not add optional features without approval.
+- [x] Audit customer journeys and existing admin controls; fix settings hydration, size selection, action feedback, cart/favorites errors, account sign-out and recovery entry, and sensitive order confirmations.
+- [x] Verify real admin access, unchanged account/settings save-and-read-back, sign-out denial, public pages at 320/360/375/384/390/414/430/768/1280px, and admin pages at 320/384/430/768/1280px; nine rule tests pass and build is clean.
+- [x] Report editing limitations and optional improvements for the owner's decision; no optional content editor, inventory, or notification system added.
+- [ ] Verify signup profile creation and recovery email end-to-end: requires a designated customer test account/mailbox; trigger presence and approved return URLs checked without fabricating customers or sending unsolicited emails.
 
 - [x] Enable Lovable Cloud
 - [x] Enable email/password auth

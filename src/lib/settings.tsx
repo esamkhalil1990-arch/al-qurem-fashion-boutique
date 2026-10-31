@@ -45,6 +45,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
 
 export const settingsQueryKey = ["site-settings"];
 
+export function useSettingsQuery() {
+  return useQuery({ queryKey: settingsQueryKey, queryFn: fetchSettings, staleTime: 60_000 });
+}
+
 export async function fetchSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase.from("site_settings").select("*").maybeSingle();
   if (error) throw error;
@@ -70,11 +74,7 @@ export type SiteSettingsWithLinks = SiteSettings & {
 
 /** Live business details from the database, editable in the admin dashboard. */
 export function useSettings(): SiteSettingsWithLinks {
-  const { data } = useQuery({
-    queryKey: settingsQueryKey,
-    queryFn: fetchSettings,
-    staleTime: 60_000,
-  });
+  const { data } = useSettingsQuery();
 
   const s = data ?? DEFAULT_SETTINGS;
   const digits = s.whatsapp_number.replace(/\D/g, "");

@@ -47,7 +47,7 @@ export function useProducts(category: string, sort: string) {
   return useQuery({
     queryKey: ["products", category, sort],
     queryFn: async (): Promise<Product[]> => {
-      let q = supabase.from("products").select("*").eq("category", category);
+      let q = supabase.from("products").select("*").eq("category", category).eq("is_active", true);
       if (sort === "price-asc") q = q.order("price", { ascending: true });
       else if (sort === "price-desc") q = q.order("price", { ascending: false });
       else q = q.order("created_at", { ascending: false });

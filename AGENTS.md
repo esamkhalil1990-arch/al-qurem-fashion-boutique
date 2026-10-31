@@ -13,3 +13,5 @@
 - Orders are created atomically from the authenticated cart by checkout_cart, with immutable product/price snapshots; browser totals are never authoritative.
 - Customer auth management uses authenticated server functions with an active-account and database admin-role check before privileged access; roles must never be automatically reclaimed from email.
 - Orders are cancelled or archived rather than deleted to preserve transaction history; account suspension also gates data access for existing sessions.
+- Create customer profiles from the Auth signup trigger without assigning roles; confirmation-required signups have no browser session for profile writes.
+- Admin settings forms hydrate only from a completed settings query, never from temporary public fallbacks; this prevents overwriting saved details during loading.

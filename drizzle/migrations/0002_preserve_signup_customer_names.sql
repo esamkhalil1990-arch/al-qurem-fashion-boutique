@@ -1,0 +1,3 @@
+CREATE OR REPLACE FUNCTION public.create_customer_profile() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$ BEGIN INSERT INTO public.profiles(id, full_name) VALUES(NEW.id, left(coalesce(NEW.raw_user_meta_data->>'full_name', ''), 150)) ON CONFLICT(id) DO NOTHING; RETURN NEW; END $$;
+REVOKE ALL ON FUNCTION public.create_customer_profile() FROM PUBLIC, anon, authenticated;
+CREATE TRIGGER create_customer_profile AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.create_customer_profile();

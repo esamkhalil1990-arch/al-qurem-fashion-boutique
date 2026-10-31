@@ -1,5 +1,12 @@
 # Roadmap — Port Bolt version into Lovable project
 
+## Approved store improvements and guest shopping
+- [ ] Add bilingual homepage/photo/policy content editing.
+- [ ] Add audited delivery-detail corrections, customer order history/tracking, stock quantities and low-stock alerts.
+- [ ] Allow guest cart additions and quantities; require verified sign-in only at checkout and preserve guest cart through sign-in.
+- [ ] Switch customer sign-in to phone OTP without locking out the existing owner; confirm SMS configuration and report any blocker.
+- [ ] Verify guest cart, admin controls, stock rules, order privacy and mobile layouts.
+
 ## Seamless website and admin review
 - [x] Audit customer journeys and existing admin controls; fix settings hydration, size selection, action feedback, cart/favorites errors, account sign-out and recovery entry, and sensitive order confirmations.
 - [x] Verify real admin access, unchanged account/settings save-and-read-back, sign-out denial, public pages at 320/360/375/384/390/414/430/768/1280px, and admin pages at 320/384/430/768/1280px; nine rule tests pass and build is clean.

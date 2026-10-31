@@ -15,6 +15,13 @@
       "when": 1793398552550,
       "tag": "0001_enforce_suspension_and_atomic_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793436659212,
+      "tag": "0002_preserve_signup_customer_names",
+      "breakpoints": true
     }
   ]
 }

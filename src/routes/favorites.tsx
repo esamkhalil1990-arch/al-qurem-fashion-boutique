@@ -22,7 +22,7 @@ function FavoritesContent() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { user, loading } = useSession();
-  const { data: favorites = [], isLoading } = useFavorites(user?.id);
+  const { data: favorites = [], isLoading, error } = useFavorites(user?.id);
 
   if (loading) {
     return <p className="py-24 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>;
@@ -46,7 +46,7 @@ function FavoritesContent() {
     );
   }
 
-  const products = favorites.map((f) => f.products).filter((p) => p !== null);
+  const products = favorites.map((f) => f.products).filter((p) => p !== null && p.is_active);
 
   return (
     <div className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">
@@ -54,7 +54,7 @@ function FavoritesContent() {
         {t("المفضلة", "Favorites")}
       </h1>
 
-      {isLoading ? (
+      {error ? <p role="alert" className="mt-8 text-destructive">{t("تعذر تحميل المفضلة. حاول مرة أخرى.", "Unable to load favorites. Please try again.")}</p> : isLoading ? (
         <p className="mt-16 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>
       ) : products.length === 0 ? (
         <div className="mt-16 text-center">

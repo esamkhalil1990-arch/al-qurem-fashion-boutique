@@ -31,7 +31,7 @@ function CartContent() {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const { user, loading } = useSession();
-  const { data: items = [], isLoading } = useCart(user?.id);
+  const { data: items = [], isLoading, error: cartError } = useCart(user?.id);
   const qc = useQueryClient();
   const { whatsappHref } = useSettings();
   const submitOrder = useServerFn(placeOrder);
@@ -83,7 +83,7 @@ function CartContent() {
 
   const total = items.reduce((sum, i) => sum + (i.products?.price ?? 0) * i.quantity, 0);
 
-  const orderText = checkout.data?.order_items.map(i => `- ${lang === 'ar' ? i.name_ar : i.name_en} x${i.quantity} (${i.unit_price} JOD)`).join('\n') ?? '';
+  const orderText = checkout.data?.order_items.map(i => `- ${lang === 'ar' ? i.name_ar : i.name_en}${i.size ? ` · ${i.size}` : ''} x${i.quantity} (${i.unit_price} JOD)`).join('\n') ?? '';
   const checkoutUrl = `${whatsappHref}?text=${encodeURIComponent(
     `${t("طلب جديد من الموقع:", "New order from the website:")} #${checkout.data?.order_number}\n${orderText}\n${t("المجموع", "Total")}: ${checkout.data?.total} JOD\n${delivery.name} · ${delivery.phone}\n${delivery.address}`,
   )}`;
@@ -99,10 +99,11 @@ function CartContent() {
           <p role="status">{t('تم تسجيل طلبك', 'Your order is recorded')} #{checkout.data.order_number}</p>
           <p>{Number(checkout.data.total).toFixed(2)} {t('د.أ','JOD')}</p>
           <Button asChild className="min-h-11 h-auto whitespace-normal"><a href={checkoutUrl} target="_blank" rel="noopener noreferrer">{t('متابعة التأكيد عبر واتساب','Continue confirmation via WhatsApp')}</a></Button>
+          <Button asChild variant="outline" className="min-h-11"><Link to="/">{t('تابع التسوق','Continue shopping')}</Link></Button>
         </div>
       ) : isLoading ? (
         <p className="mt-16 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>
-      ) : items.length === 0 ? (
+      ) : cartError ? <p role="alert" className="mt-8 text-destructive">{t('تعذر تحميل السلة. حاول مرة أخرى.', 'Unable to load your cart. Please try again.')}</p> : items.length === 0 ? (
         <div className="mt-16 text-center">
           <p className="text-muted-foreground">{t("سلّتك فارغة حالياً.", "Your cart is empty.")}</p>
           <Link to="/" className="mt-6 inline-block bg-primary px-6 py-3 text-sm text-primary-foreground">
@@ -114,9 +115,9 @@ function CartContent() {
           <ul className="mt-10 divide-y divide-border border border-border">
             {items.map((item) => {
               const p = item.products;
-              if (!p) return null;
+              if (!p) return <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 p-4"><p>{t('هذا المنتج لم يعد متاحًا.', 'This product is no longer available.')}</p><Button variant="outline" disabled={updateQty.isPending} onClick={() => updateQty.mutate({ id: item.id, quantity: 0 })}>{t('إزالة', 'Remove')}</Button></li>;
               return (
-                <li key={item.id} className="flex items-center gap-4 p-4">
+                <li key={item.id} className="flex flex-wrap items-center gap-3 p-4">
                   <img
                     src={p.image_url ?? CATEGORY_IMAGES[p.category]}
                     alt={t(p.name_ar, p.name_en)}
@@ -125,34 +126,38 @@ function CartContent() {
                     height={80}
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{t(p.name_ar, p.name_en)}</p>
+                    <p className="break-words font-medium">{t(p.name_ar, p.name_en)}</p>
+                    {item.size && <p className="text-sm text-muted-foreground">{t('المقاس', 'Size')}: {item.size}</p>}
                     <p className="mt-0.5 text-sm text-primary">
                       {p.price} {t("د.أ", "JOD")}
                     </p>
                   </div>
                   <div className="flex items-center border border-border">
-                    <button
+                    <Button variant="ghost" size="icon"
                       type="button"
                       aria-label={t("تقليل الكمية", "Decrease quantity")}
                       onClick={() => updateQty.mutate({ id: item.id, quantity: item.quantity - 1 })}
-                      className="p-2"
+                      disabled={updateQty.isPending || checkout.isPending}
+                      className="h-11 w-11 rounded-none p-2"
                     >
                       {item.quantity <= 1 ? <Trash2 className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-                    </button>
+                    </Button>
                     <span className="w-8 text-center text-sm">{item.quantity}</span>
-                    <button
+                    <Button variant="ghost" size="icon"
                       type="button"
                       aria-label={t("زيادة الكمية", "Increase quantity")}
                       onClick={() => updateQty.mutate({ id: item.id, quantity: item.quantity + 1 })}
-                      className="p-2"
+                      disabled={updateQty.isPending || checkout.isPending || item.quantity >= 999}
+                      className="h-11 w-11 rounded-none p-2"
                     >
                       <Plus className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 </li>
               );
             })}
           </ul>
+          {updateQty.error && <p role="alert" className="mt-4 text-destructive">{t('تعذر تحديث السلة. حاول مرة أخرى.', 'Unable to update the cart. Please try again.')}</p>}
 
           <div className="mt-8 flex flex-col items-end gap-4">
             <p className="text-lg">

@@ -1,4 +1,7 @@
 import { Heart, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { canSelectProduct } from "@/lib/product-selection";
 import { useNavigate } from "@tanstack/react-router";
 import { useLanguage } from "@/lib/language";
 import {
@@ -33,6 +36,8 @@ export function ProductCard({
   const { user } = useSession();
   const toggleFav = useToggleFavorite(user?.id);
   const addToCart = useAddToCart(user?.id);
+  const [size, setSize] = useState("");
+  const canAdd = canSelectProduct(product.is_active, product.sizes, size);
 
   const requireLogin = () => {
     if (!user) {
@@ -53,20 +58,21 @@ export function ProductCard({
           height={1200}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <button
+        <Button variant="ghost" size="icon"
           type="button"
           onClick={() => {
             if (requireLogin()) return;
             toggleFav.mutate({ productId: product.id, isFav });
           }}
           aria-pressed={isFav}
-          aria-label={t("أضف إلى المفضلة", "Add to favorites")}
-          className={`absolute top-3 end-3 p-2 transition-colors ${
+          disabled={toggleFav.isPending}
+          aria-label={isFav ? t("إزالة من المفضلة", "Remove from favorites") : t("أضف إلى المفضلة", "Add to favorites")}
+          className={`absolute top-3 end-3 h-11 w-11 rounded-none p-2 transition-colors ${
             isFav ? "bg-primary text-primary-foreground" : "bg-background/90 text-foreground"
           }`}
         >
           <Heart className={`h-4 w-4 ${isFav ? "fill-current" : ""}`} aria-hidden="true" />
-        </button>
+        </Button>
         {product.old_price != null && product.old_price > product.price && (
           <span className="absolute top-3 start-3 bg-primary px-2 py-1 text-[0.65rem] tracking-widest text-primary-foreground uppercase">
             {t("خصم", "Sale")}
@@ -74,7 +80,7 @@ export function ProductCard({
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-display text-base font-medium">
+        <h3 className="break-words font-display text-base font-medium">
           {t(product.name_ar, product.name_en)}
         </h3>
         <p className="mt-1 text-sm">
@@ -85,17 +91,21 @@ export function ProductCard({
             </span>
           )}
         </p>
-        <button
+        {!!product.sizes?.length && <label className="mt-3 block text-sm">{t("المقاس", "Size")}<select aria-label={`${t("المقاس", "Size")} · ${t(product.name_ar, product.name_en)}`} value={size} onChange={e => { setSize(e.target.value); addToCart.reset(); }} className="mt-1 min-h-11 w-full min-w-0 border border-border bg-background px-2"><option value="">{t("اختر المقاس", "Choose size")}</option>{product.sizes.map(s => <option key={s} value={s}>{s}</option>)}</select></label>}
+        <Button variant="outline"
           type="button"
+          disabled={addToCart.isPending || !canAdd}
           onClick={() => {
             if (requireLogin()) return;
-            addToCart.mutate({ productId: product.id });
+            addToCart.mutate({ productId: product.id, size: size || undefined });
           }}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 border border-primary px-4 py-2.5 text-sm text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          className="mt-3 h-auto min-h-11 w-full gap-2 whitespace-normal rounded-none border-primary px-2 py-2.5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
           <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-          {t("أضف إلى السلة", "Add to Cart")}
-        </button>
+          {addToCart.isPending ? t("جارٍ الإضافة...", "Adding...") : t("أضف إلى السلة", "Add to Cart")}
+        </Button>
+        {addToCart.isSuccess && <p role="status" className="mt-2 text-sm text-primary">{t("تمت الإضافة إلى السلة", "Added to cart")}</p>}
+        {(addToCart.error || toggleFav.error) && <p role="alert" className="mt-2 break-words text-sm text-destructive">{t("تعذر الحفظ. حاول مرة أخرى.", "Unable to save. Please try again.")}</p>}
       </div>
     </li>
   );

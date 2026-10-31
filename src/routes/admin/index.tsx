@@ -7,10 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   DEFAULT_SETTINGS,
   settingsQueryKey,
-  useSettings,
+  useSettingsQuery,
   type OpeningHoursRow,
 } from "@/lib/settings";
 import { AdminGate, fieldClass, labelClass } from "@/components/site/AdminGate";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
@@ -34,7 +35,8 @@ export const Route = createFileRoute("/admin/")({
 function SettingsForm() {
   const { t } = useLanguage();
   const qc = useQueryClient();
-  const settings = useSettings();
+  const settingsQuery = useSettingsQuery();
+  const settings = settingsQuery.data;
 
   const [form, setForm] = useState(DEFAULT_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
@@ -42,7 +44,7 @@ function SettingsForm() {
   const [msg, setMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
   useEffect(() => {
-    if (hydrated) return;
+    if (hydrated || !settings) return;
     setForm({
       phone_number: settings.phone_number,
       phone_intl: settings.phone_intl,
@@ -87,7 +89,7 @@ function SettingsForm() {
         address_en: form.address_en,
         opening_hours: form.opening_hours as unknown as never,
       })
-      .eq("id", true);
+      .eq("id", true).select("id").single();
     setBusy(false);
     if (error) {
       setMsg({ kind: "error", text: error.message });
@@ -108,6 +110,9 @@ function SettingsForm() {
     { key: "address_ar", ar: "العنوان بالعربية", en: "Address (Arabic)" },
     { key: "address_en", ar: "العنوان بالإنجليزية", en: "Address (English)" },
   ];
+
+  if (settingsQuery.isPending) return <p role="status">{t("جارٍ التحميل...", "Loading...")}</p>;
+  if (settingsQuery.error) return <div role="alert" className="space-y-4"><p>{t("تعذر تحميل معلومات المحل. لم يتم تغيير أي بيانات.", "Unable to load shop details. No data was changed.")}</p><Button variant="outline" onClick={() => settingsQuery.refetch()}>{t("حاول مرة أخرى", "Try again")}</Button></div>;
 
   return (
     <form onSubmit={onSubmit} className="space-y-8">
@@ -141,7 +146,7 @@ function SettingsForm() {
       <div>
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-medium">{t("ساعات العمل", "Opening hours")}</h2>
-          <button
+          <Button variant="outline"
             type="button"
             onClick={() =>
               setForm((f) => ({
@@ -156,7 +161,7 @@ function SettingsForm() {
           >
             <Plus className="h-3.5 w-3.5" aria-hidden="true" />
             {t("إضافة صف", "Add row")}
-          </button>
+          </Button>
         </div>
 
         <div className="mt-4 space-y-4">
@@ -194,7 +199,7 @@ function SettingsForm() {
                   onChange={(e) => setHour(i, "timeEn", e.target.value)}
                 />
               </label>
-              <button
+              <Button variant="ghost"
                 type="button"
                 onClick={() =>
                   setForm((f) => ({
@@ -206,20 +211,20 @@ function SettingsForm() {
               >
                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                 {t("حذف الصف", "Remove row")}
-              </button>
+              </Button>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
           type="submit"
-          disabled={busy}
+          disabled={busy || !hydrated}
           className="bg-primary px-7 py-3 text-sm text-primary-foreground disabled:opacity-60"
         >
           {busy ? t("جارٍ الحفظ...", "Saving...") : t("حفظ التغييرات", "Save changes")}
-        </button>
+        </Button>
         {msg && (
           <p className={`text-sm ${msg.kind === "ok" ? "text-primary" : "text-destructive"}`}>
             {msg.text}

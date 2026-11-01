@@ -73,3 +73,4 @@ export const sendAccountReset = createServerFn({ method: 'POST' }).middleware([r
   if (sendError) throw new Error('Unable to send reset email');
   return { ok: true };
 });
+export const readCustomerOrders=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).handler(async({context})=>{const {data,error}=await context.supabase.from("orders").select("id,order_number,status,total,delivery_address,created_at,order_items(*),order_events(id,status,created_at)").eq("user_id",context.userId).order("created_at",{ascending:false});if(error)throw new Error("Unable to load orders");return data??[];});

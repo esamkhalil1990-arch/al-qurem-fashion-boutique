@@ -99,6 +99,7 @@ export type Database = {
       order_events: {
         Row: {
           actor_id: string
+          changes: Json
           created_at: string
           id: string
           note: string
@@ -107,6 +108,7 @@ export type Database = {
         }
         Insert: {
           actor_id: string
+          changes?: Json
           created_at?: string
           id?: string
           note?: string
@@ -115,6 +117,7 @@ export type Database = {
         }
         Update: {
           actor_id?: string
+          changes?: Json
           created_at?: string
           id?: string
           note?: string
@@ -232,11 +235,13 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          low_stock_threshold: number
           name_ar: string
           name_en: string
           old_price: number | null
           price: number
           sizes: string[] | null
+          stock_quantity: number | null
         }
         Insert: {
           category: string
@@ -246,11 +251,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          low_stock_threshold?: number
           name_ar: string
           name_en: string
           old_price?: number | null
           price?: number
           sizes?: string[] | null
+          stock_quantity?: number | null
         }
         Update: {
           category?: string
@@ -260,11 +267,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          low_stock_threshold?: number
           name_ar?: string
           name_en?: string
           old_price?: number | null
           price?: number
           sizes?: string[] | null
+          stock_quantity?: number | null
         }
         Relationships: []
       }
@@ -286,6 +295,30 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          image_url: string | null
+          key: string
+          text_ar: string
+          text_en: string
+          updated_at: string
+        }
+        Insert: {
+          image_url?: string | null
+          key: string
+          text_ar?: string
+          text_en?: string
+          updated_at?: string
+        }
+        Update: {
+          image_url?: string | null
+          key?: string
+          text_ar?: string
+          text_en?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -378,6 +411,7 @@ export type Database = {
         Returns: boolean
       }
       is_account_active: { Args: never; Returns: boolean }
+      merge_guest_cart: { Args: { _items: Json }; Returns: undefined }
       set_customer_role: {
         Args: { _role: string; _target: string }
         Returns: undefined

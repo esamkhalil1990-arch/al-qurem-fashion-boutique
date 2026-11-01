@@ -403,6 +403,17 @@ export type Database = {
         }
         Returns: string
       }
+      checkout_guest_cart: {
+        Args: {
+          _address: string
+          _items: Json
+          _name: string
+          _notes: string
+          _phone: string
+          _request_id: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

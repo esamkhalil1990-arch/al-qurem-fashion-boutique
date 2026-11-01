@@ -29,6 +29,13 @@
       "when": 1793516107695,
       "tag": "0003_content_inventory_and_audited_order_delivery",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793516142197,
+      "tag": "0004_atomic_guest_cart_checkout",
+      "breakpoints": true
     }
   ]
 }

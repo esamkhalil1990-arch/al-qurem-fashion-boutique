@@ -37,7 +37,7 @@ export function ProductCard({
   const toggleFav = useToggleFavorite(user?.id);
   const addToCart = useAddToCart(user?.id);
   const [size, setSize] = useState("");
-  const canAdd = canSelectProduct(product.is_active, product.sizes, size);
+  const canAdd = canSelectProduct(product.is_active, product.sizes, size) && product.stock_quantity !== 0;
 
   const requireLogin = () => {
     if (!user) {
@@ -96,13 +96,12 @@ export function ProductCard({
           type="button"
           disabled={addToCart.isPending || !canAdd}
           onClick={() => {
-            if (requireLogin()) return;
             addToCart.mutate({ productId: product.id, ...(size ? { size } : {}) });
           }}
           className="mt-3 h-auto min-h-11 w-full gap-2 whitespace-normal rounded-none border-primary px-2 py-2.5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
           <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-          {addToCart.isPending ? t("جارٍ الإضافة...", "Adding...") : t("أضف إلى السلة", "Add to Cart")}
+          {product.stock_quantity===0 ? t('نفد المخزون','Sold out') : addToCart.isPending ? t("جارٍ الإضافة...", "Adding...") : t("أضف إلى السلة", "Add to Cart")}
         </Button>
         {addToCart.isSuccess && <p role="status" className="mt-2 text-sm text-primary">{t("تمت الإضافة إلى السلة", "Added to cart")}</p>}
         {(addToCart.error || toggleFav.error) && <p role="alert" className="mt-2 break-words text-sm text-destructive">{t("تعذر الحفظ. حاول مرة أخرى.", "Unable to save. Please try again.")}</p>}

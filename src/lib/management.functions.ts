@@ -22,7 +22,7 @@ export const updateOrder = createServerFn({ method: 'POST' }).middleware([requir
   return { ok: true };
 });
 export const placeOrder = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(checkoutSchema).handler(async ({ context, data }) => {
-  const { data: id, error } = await context.supabase.rpc('checkout_cart', { _name: data.name, _phone: data.phone, _address: data.address, _notes: data.notes, _request_id: data.requestId });
+  const { data: id, error } = await context.supabase.rpc('checkout_guest_cart', { _items:data.guestItems, _name: data.name, _phone: data.phone, _address: data.address, _notes: data.notes, _request_id: data.requestId });
   if (error) throw new Error('Unable to place order. Check your cart and delivery details.');
   const { data: order, error: readError } = await context.supabase.from('orders').select('*,order_items(*)').eq('id', id).single();
   if (readError || !order) throw new Error('Unable to read order confirmation');
@@ -44,7 +44,8 @@ export const readAccounts = createServerFn({ method: 'POST' }).middleware([requi
   if (profiles.error || roles.error || controls.error || orders.error) throw new Error('Unable to load customer details');
   return users.map(u => ({ id: u.id, email: u.email ?? '', created_at: u.created_at, last_sign_in_at: u.last_sign_in_at ?? null,
     full_name: profiles.data?.find(p => p.id === u.id)?.full_name ?? String(u.user_metadata?.['full_name'] ?? ''),
-    phone: profiles.data?.find(p => p.id === u.id)?.phone ?? '',
+    phone: profiles.data?.find(p => p.id === u.id)?.phone || u.phone || '',
+    login_phone:u.phone??'',
     suspended: controls.data?.some(c => c.user_id === u.id && c.suspended) ?? false,
     role: roles.data?.some(r => r.user_id === u.id && r.role === 'admin') ? 'admin' : roles.data?.some(r => r.user_id === u.id && r.role === 'staff') ? 'staff' : 'customer',
     orders: orders.data?.filter(o => o.user_id === u.id) ?? [],
@@ -55,7 +56,7 @@ export const updateAccount = createServerFn({ method: 'POST' }).middleware([requ
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: existing, error: findError } = await supabaseAdmin.auth.admin.getUserById(data.id);
   if (findError || !existing.user) throw new Error('Account not found');
-  const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(data.id, { email: data.email, ban_duration: data.suspended ? '876000h' : 'none' });
+  const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(data.id, { ...(data.email?{email: data.email}:{}), ban_duration: data.suspended ? '876000h' : 'none' });
   if (authError) throw new Error('Unable to update sign-in account');
   const { error: profileError } = await supabaseAdmin.from('profiles').upsert({ id: data.id, full_name: data.full_name, phone: data.phone });
   const { error: controlError } = await supabaseAdmin.from('account_controls').upsert({ user_id: data.id, suspended: data.suspended, updated_at: new Date().toISOString() });

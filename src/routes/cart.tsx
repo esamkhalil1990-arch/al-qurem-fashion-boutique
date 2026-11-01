@@ -12,6 +12,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { placeOrder } from '@/lib/management.functions';
 import { Button } from '@/components/ui/button';
 import { fieldClass } from '@/components/site/AdminGate';
+import { readGuestCart, writeGuestCart } from '@/lib/guest-cart';
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -41,13 +42,14 @@ function CartContent() {
     mutationFn: async () => {
       const id = requestId ?? crypto.randomUUID();
       setRequestId(id);
-      return submitOrder({ data: { ...delivery, requestId: id } });
+      return submitOrder({ data: { ...delivery, requestId: id, guestItems: readGuestCart() } });
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['cart', user?.id] }); },
+    onSuccess: () => { writeGuestCart([]); qc.invalidateQueries({ queryKey: ['cart'] }); qc.invalidateQueries({ queryKey: ['customer-orders'] }); },
   });
 
   const updateQty = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
+      if(id.startsWith('guest:')) {writeGuestCart(readGuestCart().flatMap(i=>`guest:${i.product_id}:${i.size??''}`===id ? quantity>0?[{...i,quantity}]:[]:[i]));return;}
       if (quantity <= 0) {
         const { error } = await supabase.from("cart_items").delete().eq("id", id);
         if (error) throw error;
@@ -61,24 +63,6 @@ function CartContent() {
 
   if (loading) {
     return <p className="py-24 text-center text-muted-foreground">{t("جارٍ التحميل...", "Loading...")}</p>;
-  }
-
-  if (!user) {
-    return (
-      <div className="mx-auto max-w-md px-5 py-20 text-center sm:px-8">
-        <h1 className="font-display text-3xl font-semibold">{t("تسجيل الدخول", "Sign In")}</h1>
-        <p className="mt-4 text-muted-foreground">
-          {t("سجّل دخولك لتشوف سلّة التسوق.", "Sign in to view your shopping cart.")}
-        </p>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/login" })}
-          className="mt-6 bg-primary px-7 py-3 text-sm text-primary-foreground"
-        >
-          {t("تسجيل الدخول", "Sign In")}
-        </button>
-      </div>
-    );
   }
 
   const total = items.reduce((sum, i) => sum + (i.products?.price ?? 0) * i.quantity, 0);
@@ -164,12 +148,12 @@ function CartContent() {
               {t("المجموع:", "Total:")}{" "}
               <span className="font-semibold text-primary">{total.toFixed(2)} {t("د.أ", "JOD")}</span>
             </p>
-            <form className="w-full space-y-4" onSubmit={e=>{e.preventDefault();checkout.mutate();}}>
+            {!user ? <Button className="min-h-11 h-auto whitespace-normal" onClick={()=>navigate({to:'/login',search:{next:'cart'}})}>{t('تسجيل الدخول لإتمام الطلب','Sign in to place order')}</Button> : <form className="w-full space-y-4" onSubmit={e=>{e.preventDefault();checkout.mutate();}}>
               {(['name','phone','address'] as const).map(key=><label key={key} className="block text-sm">{key==='name'?t('اسم العميل','Customer name'):key==='phone'?t('رقم الهاتف','Phone number'):t('عنوان التوصيل أو الاستلام من المحل','Delivery address or pickup at shop')}<input required className={fieldClass} type={key==='phone'?'tel':'text'} minLength={key==='phone'?7:key==='name'?2:3} maxLength={key==='address'?1000:key==='name'?150:40} value={delivery[key]} onChange={e=>setDelivery({...delivery,[key]:e.target.value})}/></label>)}
               <label className="block text-sm">{t('ملاحظات','Notes')}<textarea className={fieldClass} maxLength={2000} value={delivery.notes} onChange={e=>setDelivery({...delivery,notes:e.target.value})}/></label>
               <Button className="min-h-11 h-auto whitespace-normal" disabled={checkout.isPending || updateQty.isPending} type="submit">{checkout.isPending?t('جارٍ تسجيل الطلب…','Recording order…'):t('تسجيل الطلب والمتابعة عبر واتساب','Place order and continue via WhatsApp')}</Button>
               {checkout.error&&<p role="alert" className="text-destructive">{checkout.error.message}</p>}
-            </form>
+            </form>}
             <p className="text-xs text-muted-foreground">
               {t(
                 "يُرسل طلبك إلى المحل عبر واتساب لتأكيد التوفر والاستلام.",

@@ -1,0 +1,13 @@
+import { useEffect, useState, type FormEvent } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { normalizePhone } from '@/lib/guest-cart';
+import { useLanguage } from '@/lib/language';
+import { Button } from '@/components/ui/button';
+import { fieldClass, labelClass } from './AdminGate';
+export function PhoneSignIn({onSuccess}:{onSuccess:()=>void}) {
+  const {t}=useLanguage();const [phone,setPhone]=useState('');const [code,setCode]=useState('');const [sent,setSent]=useState(false);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [seconds,setSeconds]=useState(0);
+  useEffect(()=>{if(!seconds)return;const timer=setTimeout(()=>setSeconds(s=>s-1),1000);return()=>clearTimeout(timer);},[seconds]);
+  async function send(){setBusy(true);setError('');try {const normalized=normalizePhone(phone);const {error}=await supabase.auth.signInWithOtp({phone:normalized});if(error)throw error;setPhone(normalized);setSent(true);setSeconds(60);}catch{setError(t('تعذر إرسال الرمز. تأكد من الرقم وتفعيل خدمة رسائل الدخول لدى المحل ثم حاول مرة أخرى.','Unable to send the code. Check your number and the store’s SMS sign-in setup, then try again.'));}finally{setBusy(false);}}
+  async function submit(e:FormEvent){e.preventDefault();if(!sent){await send();return;}setBusy(true);setError('');const {error}=await supabase.auth.verifyOtp({phone,token:code,type:'sms'});setBusy(false);if(error){setError(t('الرمز غير صحيح أو انتهت صلاحيته.','The code is incorrect or has expired.'));return;}onSuccess();}
+  return <form onSubmit={submit} className="space-y-5"><label className={labelClass}>{t('رقم الهاتف','Phone number')}<input type="tel" autoComplete="tel" dir="ltr" required disabled={sent} placeholder="07XXXXXXXX" value={phone} onChange={e=>setPhone(e.target.value)} className={fieldClass}/></label>{sent&&<label className={labelClass}>{t('رمز التحقق','Verification code')}<input className={fieldClass} dir="ltr" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,8}" maxLength={8} required value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,''))}/></label>}<Button type="submit" className="w-full min-h-11 h-auto whitespace-normal" disabled={busy}>{busy?t('لحظات...','One moment...'):sent?t('تحقق وتابع','Verify and continue'):t('إرسال رمز الدخول','Send sign-in code')}</Button>{sent&&<div className="flex flex-wrap gap-3"><Button variant="link" disabled={busy||seconds>0} onClick={()=>void send()}>{t('إعادة الإرسال','Resend')}{seconds>0?` (${seconds})`:''}</Button><Button variant="link" onClick={()=>{setSent(false);setCode('');setError('');}}>{t('تغيير الرقم','Change number')}</Button></div>}{error&&<p role="alert" className="break-words text-destructive">{error}</p>}</form>;
+}

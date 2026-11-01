@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { addGuestItem, readGuestCart, writeGuestCart } from './guest-cart';
 
 export type Product = {
   id: string;
@@ -16,6 +17,8 @@ export type Product = {
   sizes: string[] | null;
   is_active: boolean;
   created_at: string;
+  stock_quantity: number | null;
+  low_stock_threshold: number;
 };
 
 export type CartRow = {
@@ -99,14 +102,21 @@ export function useToggleFavorite(userId: string | undefined) {
 export function useCart(userId: string | undefined) {
   return useQuery({
     queryKey: ["cart", userId],
-    enabled: !!userId,
     queryFn: async () => {
+      const entries=readGuestCart();
+      let guest:CartRow[]=[];
+      if(entries.length){
+        const {data,error}=await supabase.from('products').select('*').in('id',entries.map(i=>i.product_id)).eq('is_active',true);
+        if(error)throw error;
+        guest=entries.map(i=>({...i,id:`guest:${i.product_id}:${i.size??''}`,products:(data?.find(p=>p.id===i.product_id) as Product|undefined)??null}));
+      }
+      if(!userId)return guest;
       const { data, error } = await supabase
         .from("cart_items")
         .select("id, product_id, quantity, size, products(*)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as CartRow[];
+      return [...(data ?? []) as CartRow[],...guest];
     },
   });
 }
@@ -115,11 +125,8 @@ export function useAddToCart(userId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ productId, size }: { productId: string; size?: string }) => {
-      if (!userId) throw new Error("not-authenticated");
-      const { error } = await supabase.from("cart_items").upsert(
-        { user_id: userId, product_id: productId, size: size ?? null, quantity: 1 },
-        { onConflict: "user_id,product_id,size", ignoreDuplicates: false },
-      );
+      if (!userId) {writeGuestCart(addGuestItem(readGuestCart(),productId,size??null));return;}
+      const { error } = await supabase.rpc('merge_guest_cart',{_items:[{product_id:productId,size:size??null,quantity:1}]});
       if (error) throw error;
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ["cart", userId] }),

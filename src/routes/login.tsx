@@ -6,8 +6,10 @@ import { PageLayout } from "@/components/site/PageLayout";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/shop";
 import { useQueryClient } from "@tanstack/react-query";
+import { PhoneSignIn } from "@/components/site/PhoneSignIn";
 
 export const Route = createFileRoute("/login")({
+  validateSearch:(s:Record<string,unknown>)=>({next:s["next"]==="cart"?"cart":undefined}),
   head: () => ({
     meta: [
       { title: "Sign In — تسجيل الدخول | AL-Qurem Fashion" },
@@ -26,6 +28,8 @@ function LoginContent() {
   const navigate = useNavigate();
   const { user } = useSession();
   const qc = useQueryClient();
+  const {next}=Route.useSearch();
+  const [ownerLogin,setOwnerLogin]=useState(false);
   const [mode, setMode] = useState<"login" | "signup" | "reset" | "forgot">("login");
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(event => {
@@ -57,7 +61,7 @@ function LoginContent() {
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate({ to: "/" });
+        navigate({ to: next==="cart"?"/cart":"/" });
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -69,7 +73,7 @@ function LoginContent() {
           await supabase.from("profiles").upsert({ id: data.user.id, full_name: fullName });
         }
         if (data.session) {
-          navigate({ to: "/" });
+          navigate({ to: next==="cart"?"/cart":"/" });
         } else {
           setMessage({
             kind: "ok",
@@ -94,7 +98,9 @@ function LoginContent() {
     }
   }
 
-  if (user && mode !== 'reset') return <div className="mx-auto max-w-md space-y-5 px-5 pb-24 sm:px-8"><h1 className="text-3xl font-display">{t('حسابي', 'My account')}</h1><p className="break-all" dir="ltr">{user.email}</p><Button asChild variant="outline"><a href="/">{t('تابع التسوق', 'Continue shopping')}</a></Button><Button disabled={busy} onClick={async () => { setBusy(true); await qc.cancelQueries(); qc.clear(); const { error } = await supabase.auth.signOut(); setBusy(false); if (error) { setMessage({kind:'error',text:t('تعذر تسجيل الخروج. حاول مرة أخرى.', 'Unable to sign out. Please try again.')}); return; } navigate({to:'/login',replace:true}); }}>{t('تسجيل الخروج', 'Sign out')}</Button>{message?.kind==='error' && <p role="alert" className="text-destructive">{message.text}</p>}</div>;
+  if (user && mode !== 'reset') return <div className="mx-auto max-w-md space-y-5 px-5 pb-24 sm:px-8"><h1 className="text-3xl font-display">{t('حسابي', 'My account')}</h1><p className="break-all" dir="ltr">{user.phone||user.email}</p><Button asChild variant="outline"><a href={next==="cart"?"/cart":"/"}>{t('تابع التسوق', 'Continue shopping')}</a></Button><Button asChild variant="outline"><a href="/orders">{t("طلباتي","My orders")}</a></Button><Button disabled={busy} onClick={async () => { setBusy(true); await qc.cancelQueries(); qc.clear(); const { error } = await supabase.auth.signOut(); setBusy(false); if (error) { setMessage({kind:'error',text:t('تعذر تسجيل الخروج. حاول مرة أخرى.', 'Unable to sign out. Please try again.')}); return; } navigate({to:'/login',replace:true}); }}>{t('تسجيل الخروج', 'Sign out')}</Button>{message?.kind==='error' && <p role="alert" className="text-destructive">{message.text}</p>}</div>;
+
+  if(!ownerLogin&&mode!=="reset")return <div className="mx-auto max-w-md space-y-7 px-5 pb-24 sm:px-8"><h1 className="font-display text-3xl">{t("تسجيل الدخول","Sign in")}</h1><PhoneSignIn onSuccess={()=>navigate({to:next==="cart"?"/cart":"/"})}/><Button variant="link" className="min-h-11" onClick={()=>setOwnerLogin(true)}>{t("دخول الحساب الحالي بالبريد","Existing account email sign-in")}</Button></div>;
 
   return (
     <div className="mx-auto max-w-md px-5 pb-24 sm:px-8">

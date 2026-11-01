@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { addGuestItem, readGuestCart, writeGuestCart } from './guest-cart';
 
 export type Product = {
   id: string;
@@ -16,6 +17,8 @@ export type Product = {
   sizes: string[] | null;
   is_active: boolean;
   created_at: string;
+  stock_quantity: number | null;
+  low_stock_threshold: number;
 };
 
 export type CartRow = {
@@ -61,8 +64,14 @@ export function useProducts(category: string, sort: string) {
 export function useFavorites(userId: string | undefined) {
   return useQuery({
     queryKey: ["favorites", userId],
-    enabled: !!userId,
     queryFn: async () => {
+      if (!userId) {
+        const entries=readGuestCart();
+        if (!entries.length) return [] as CartRow[];
+        const {data,error}=await supabase.from('products').select('*').in('id',entries.map(i=>i.product_id)).eq('is_active',true);
+        if(error)throw error;
+        return entries.map(i=>({...i,id:`${i.product_id}:${i.size??''}`,products:(data?.find(p=>p.id===i.product_id) as Product|undefined)??null}));
+      }
       const { data, error } = await supabase
         .from("favorites")
         .select("id, product_id, products(*)")

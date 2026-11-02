@@ -1,5 +1,5 @@
 import { Clock, MapPin, Navigation, Phone } from "lucide-react";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { useSettings } from "@/lib/settings";
 import { Reveal } from "./Section";
 
@@ -8,7 +8,7 @@ const EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
 )}&output=embed`;
 
 export function Location() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Location");
   const { address_ar, address_en, maps_url, opening_hours, phone_display, telHref } =
     useSettings();
 

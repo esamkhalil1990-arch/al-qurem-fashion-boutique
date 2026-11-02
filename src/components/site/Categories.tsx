@@ -4,7 +4,7 @@ import women from "@/assets/cat-women.jpg";
 import kids from "@/assets/cat-kids.jpg";
 import pajamas from "@/assets/cat-pajamas.jpg";
 import offers from "@/assets/cat-offers.jpg";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { Reveal, SectionHeading } from "./Section";
 
 const CATEGORIES = [
@@ -16,7 +16,7 @@ const CATEGORIES = [
 ];
 
 export function Categories() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Categories");
 
   return (
     <section id="categories" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
@@ -46,7 +46,7 @@ export function Categories() {
             >
               <div className="aspect-[3/4] overflow-hidden bg-secondary">
                 <img
-                  src={cat.img}
+                  src={image(`image:category:${cat.slug}`,cat.img)}
                   alt={t(cat.altAr, cat.altEn)}
                   loading="lazy"
                   width={900}

@@ -43,6 +43,8 @@ type Draft = {
   sizes: string;
   image_url: string;
   is_active: boolean;
+  stock_quantity:string;
+  low_stock_threshold:string;
 };
 
 const EMPTY: Draft = {
@@ -57,6 +59,8 @@ const EMPTY: Draft = {
   sizes: "",
   image_url: "",
   is_active: true,
+  stock_quantity:"",
+  low_stock_threshold:"3",
 };
 
 /** Uploads to the private product bucket and returns a long-lived signed URL. */
@@ -109,6 +113,8 @@ function ProductsAdmin() {
           : [],
         image_url: d.image_url || null,
         is_active: d.is_active,
+        stock_quantity:d.stock_quantity===""?null:Number(d.stock_quantity),
+        low_stock_threshold:Number(d.low_stock_threshold||3),
       };
       if (d.id) {
         const { error } = await supabase.from("products").update(payload).eq("id", d.id);
@@ -238,6 +244,7 @@ function ProductsAdmin() {
               onChange={(e) => setDraft({ ...draft, sizes: e.target.value })}
             />
           </label>
+          {(["stock_quantity","low_stock_threshold"] as const).map(k=><label key={k} className={labelClass}>{k==="stock_quantity"?t("كمية المخزون (فارغ = غير متتبع)","Stock quantity (blank = untracked)"):t("حد تنبيه المخزون المنخفض","Low-stock threshold")}<input type="number" min="0" step="1" className={fieldClass} value={draft[k]} onChange={e=>setDraft({...draft,[k]:e.target.value})}/></label>)}
           <label className={`${labelClass} sm:col-span-2`}>
             {t("الوصف بالعربية", "Description (Arabic)")}
             <textarea
@@ -318,6 +325,7 @@ function ProductsAdmin() {
       </form>
 
       <section>
+        {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).length>0&&<p role="status" className="mb-5 border-s-2 border-destructive ps-4 text-destructive">{t("مخزون منخفض:","Low stock:")} {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).map(p=>`${t(p.name_ar,p.name_en)} (${p.stock_quantity})`).join(" · ")}</p>
         <h2 className="font-display text-lg font-medium">
           {t("المنتجات الحالية", "Current products")}
         </h2>
@@ -359,6 +367,8 @@ function ProductsAdmin() {
                       sizes: (p.sizes ?? []).join(", "),
                       image_url: p.image_url ?? "",
                       is_active: p.is_active,
+                      stock_quantity:p.stock_quantity===null?"":String(p.stock_quantity),
+                      low_stock_threshold:String(p.low_stock_threshold),
                     })
                   }
                   className="p-2 text-muted-foreground hover:text-primary"

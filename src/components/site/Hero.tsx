@@ -1,9 +1,9 @@
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { ArabicLogo } from "./ArabicLogo";
 import { useSettings } from "@/lib/settings";
 
 export function Hero() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Hero");
   const { opening_hours, phone_display, telHref } = useSettings();
 
   return (

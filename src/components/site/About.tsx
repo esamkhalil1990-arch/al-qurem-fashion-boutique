@@ -1,9 +1,9 @@
 import storeImage from "@/assets/about-store.jpg";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { Reveal } from "./Section";
 
 export function About() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("About");
 
   return (
     <section id="about" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
@@ -12,7 +12,7 @@ export function About() {
         <Reveal>
           <figure className="relative">
             <img
-              src={storeImage}
+              src={image("image:about",storeImage)}
               alt={t(
                 "صورة توضيحية لأجواء محل ألبسة دافئة ومرتبة",
                 "Illustrative photo of a warm, tidy clothing shop interior",

@@ -325,7 +325,7 @@ function ProductsAdmin() {
       </form>
 
       <section>
-        {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).length>0&&<p role="status" className="mb-5 border-s-2 border-destructive ps-4 text-destructive">{t("مخزون منخفض:","Low stock:")} {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).map(p=>`${t(p.name_ar,p.name_en)} (${p.stock_quantity})`).join(" · ")}</p>
+        {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).length>0&&<p role="status" className="mb-5 border-s-2 border-destructive ps-4 text-destructive">{t("مخزون منخفض:","Low stock:")} {products.filter(p=>p.stock_quantity!==null&&p.stock_quantity<=p.low_stock_threshold).map(p=>`${t(p.name_ar,p.name_en)} (${p.stock_quantity})`).join(" · ")}</p>}
         <h2 className="font-display text-lg font-medium">
           {t("المنتجات الحالية", "Current products")}
         </h2>

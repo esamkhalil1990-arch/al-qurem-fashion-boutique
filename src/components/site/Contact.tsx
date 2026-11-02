@@ -1,10 +1,10 @@
 import { Facebook, Instagram, MessageCircle, Navigation, Phone } from "lucide-react";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { useSettings } from "@/lib/settings";
 import { Reveal } from "./Section";
 
 export function Contact() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Contact");
   const {
     facebook_url,
     instagram_url,

@@ -1,9 +1,9 @@
 import featured from "@/assets/offer-featured.jpg";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { Reveal } from "./Section";
 
 export function Offers() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Offers");
 
   const placeholder = t(
     "[قابل للتعديل — تفاصيل العرض الحالي]",
@@ -29,7 +29,7 @@ export function Offers() {
         <Reveal className="mt-14 grid gap-5 lg:grid-cols-5">
           <article className="relative overflow-hidden lg:col-span-3">
             <img
-              src={featured}
+              src={image("image:offer",featured)}
               alt={t("تشكيلة ملابس شتوية بألوان عنابية وكريمية", "Winter garments in burgundy and cream tones")}
               loading="lazy"
               width={1600}
@@ -53,9 +53,9 @@ export function Offers() {
                   {t(`عرض ${n}`, `Offer ${n}`)}
                 </span>
                 <h3 className="mt-2 font-display text-lg font-medium">
-                  {t("عنوان العرض", "Offer title")}
+                  {t(`عنوان العرض ${n}`, `Offer ${n} title`)}
                 </h3>
-                <p className="placeholder-tag mt-3 bg-ivory/10 text-ivory">{placeholder}</p>
+                <p className="placeholder-tag mt-3 bg-ivory/10 text-ivory">{t(`تفاصيل العرض ${n}`, `Offer ${n} details`)}</p>
               </article>
             ))}
           </div>

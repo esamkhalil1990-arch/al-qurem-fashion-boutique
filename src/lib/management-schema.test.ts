@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { assertAccountChange, checkoutSchema, orderUpdateSchema, accountUpdateSchema } from './management-schema';
 describe('Administrative rules', () => {
+  it('accepts delivery corrections but never price snapshots',()=>{const parsed=orderUpdateSchema.parse({id:'e10020b5-15ef-4854-829a-ae397a7a1332',status:'pending',admin_notes:'',archived:false,customer_name:'Customer',customer_phone:'0782116684',delivery_address:'Amman',total:1});expect(parsed.delivery_address).toBe('Amman');expect('total' in parsed).toBe(false);});
   it('cannot remove own admin access', () => { expect(()=>assertAccountChange('owner','owner',false,'customer')).toThrow(); });
   it('cannot suspend own account', () => { expect(()=>assertAccountChange('owner','owner',true,'admin')).toThrow(); });
   it('can manage other customers', () => { expect(()=>assertAccountChange('owner','customer',true,'customer')).not.toThrow(); });

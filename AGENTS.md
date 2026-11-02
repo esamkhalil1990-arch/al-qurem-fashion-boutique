@@ -15,3 +15,7 @@
 - Orders are cancelled or archived rather than deleted to preserve transaction history; account suspension also gates data access for existing sessions.
 - Create customer profiles from the Auth signup trigger without assigning roles; confirmation-required signups have no browser session for profile writes.
 - Admin settings forms hydrate only from a completed settings query, never from temporary public fallbacks; this prevents overwriting saved details during loading.
+- Guest cart selections live locally and are merged with the authenticated cart inside the same checkout transaction; retries cannot duplicate orders or stock deductions.
+- Nullable product stock means untracked inventory; tracked stock is locked and deducted atomically at checkout, while cancellations do not automatically restock goods.
+- Homepage and policy overrides use public-readable, admin-writable site_content rows with stable content keys and original defaults; the official logo is never content-editable.
+- Phone OTP is the primary customer login; retain existing email identity access until owner phone linking is verified to avoid owner lockout.

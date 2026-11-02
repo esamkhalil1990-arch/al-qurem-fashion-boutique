@@ -15,6 +15,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as CategorySlugRouteImport } from './routes/category/$slug'
 import { Route as PolicySlugRouteImport } from './routes/policy/$slug'
@@ -51,6 +52,11 @@ const OrdersRoute = OrdersRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/admin/content',
+  path: '/admin/content',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/admin/content': typeof AdminContentRoute
   '/admin/products': typeof AdminProductsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/policy/$slug': typeof PolicySlugRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/admin/content': typeof AdminContentRoute
   '/admin/products': typeof AdminProductsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/policy/$slug': typeof PolicySlugRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/admin/content': typeof AdminContentRoute
   '/admin/products': typeof AdminProductsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/policy/$slug': typeof PolicySlugRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/login'
     | '/orders'
+    | '/admin/content'
     | '/admin/products'
     | '/category/$slug'
     | '/policy/$slug'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/login'
     | '/orders'
+    | '/admin/content'
     | '/admin/products'
     | '/category/$slug'
     | '/policy/$slug'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/login'
     | '/orders'
+    | '/admin/content'
     | '/admin/products'
     | '/category/$slug'
     | '/policy/$slug'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   LoginRoute: typeof LoginRoute
   OrdersRoute: typeof OrdersRoute
+  AdminContentRoute: typeof AdminContentRoute
   AdminProductsRoute: typeof AdminProductsRoute
   CategorySlugRoute: typeof CategorySlugRoute
   PolicySlugRoute: typeof PolicySlugRoute
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/admin/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/products': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   LoginRoute: LoginRoute,
   OrdersRoute: OrdersRoute,
+  AdminContentRoute: AdminContentRoute,
   AdminProductsRoute: AdminProductsRoute,
   CategorySlugRoute: CategorySlugRoute,
   PolicySlugRoute: PolicySlugRoute,

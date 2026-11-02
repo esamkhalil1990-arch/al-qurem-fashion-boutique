@@ -3,7 +3,7 @@ import s1 from "@/assets/social-1.jpg";
 import s2 from "@/assets/social-2.jpg";
 import s3 from "@/assets/social-3.jpg";
 import s4 from "@/assets/social-4.jpg";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { useSettings } from "@/lib/settings";
 import { Reveal, SectionHeading } from "./Section";
 
@@ -15,7 +15,7 @@ const TILES = [
 ];
 
 export function Social() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Social");
   const { facebook_url, instagram_url, whatsappHref } = useSettings();
 
   return (
@@ -67,10 +67,10 @@ export function Social() {
       </p>
 
       <ul className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {TILES.map((tile) => (
+        {TILES.map((tile,i) => (
           <Reveal as="li" key={tile.en} className="group overflow-hidden border border-border">
             <img
-              src={tile.img}
+              src={image(`image:social:${i+1}`,tile.img)}
               alt={t(tile.ar, tile.en)}
               loading="lazy"
               width={800}

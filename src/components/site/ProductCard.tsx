@@ -37,7 +37,7 @@ export function ProductCard({
   const toggleFav = useToggleFavorite(user?.id);
   const addToCart = useAddToCart(user?.id);
   const [size, setSize] = useState("");
-  const canAdd = canSelectProduct(product.is_active, product.sizes, size) && product.stock_quantity !== 0;
+  const canAdd = canSelectProduct(product.is_active, product.sizes, size, product.stock_quantity);
 
   const requireLogin = () => {
     if (!user) {

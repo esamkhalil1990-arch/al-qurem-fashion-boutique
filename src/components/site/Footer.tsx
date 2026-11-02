@@ -1,6 +1,6 @@
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useLanguage } from "@/lib/language";
+import { useContentText } from "@/lib/content";
 import { useSettings } from "@/lib/settings";
 
 const NAV = [
@@ -29,7 +29,7 @@ const POLICIES = [
 ];
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { t, image } = useContentText("Footer");
   const {
     address_ar,
     address_en,

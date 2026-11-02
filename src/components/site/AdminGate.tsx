@@ -8,6 +8,7 @@ import { PageLayout } from "./PageLayout";
 const TABS = [
   { to: "/admin", ar: "معلومات المحل", en: "Shop details" },
   { to: "/admin/products", ar: "المنتجات", en: "Products" },
+  { to: "/admin/content", ar: "محتوى الموقع", en: "Store content" },
   { to: "/admin/orders", ar: "الطلبات", en: "Orders" },
   { to: "/admin/accounts", ar: "الحسابات", en: "Accounts" },
 ] as const;

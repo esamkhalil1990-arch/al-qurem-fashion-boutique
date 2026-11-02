@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canSelectProduct } from './product-selection';
 
 describe('Customer product selection', () => {
+  it('blocks sold-out tracked stock',()=>{expect(canSelectProduct(true,[], '',0)).toBe(false);expect(canSelectProduct(true,[],'',1)).toBe(true);});
   it('does not allow hidden products to be purchased', () => {
     expect(canSelectProduct(false, [], '')).toBe(false);
   });

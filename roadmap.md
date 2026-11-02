@@ -1,5 +1,10 @@
 # Roadmap — Port Bolt version into Lovable project
 
+## Sign-in refinement
+- [ ] Refine phone/email menus, visibility controls, validation, feedback and recovery navigation while preserving guest checkout and owner access.
+- [ ] Research free production phone OTP options without replacing customer identities or using insecure test codes.
+- [ ] Verify sign-in transitions, errors, visibility controls and narrow/mobile layouts.
+
 ## Approved store improvements and guest shopping
 - [x] Add bilingual homepage/photo/policy content editing with original defaults and protected admin writes.
 - [x] Add audited delivery-detail corrections, customer order history/status timelines, stock quantities and dashboard low-stock alerts.

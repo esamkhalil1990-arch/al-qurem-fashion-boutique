@@ -16,7 +16,8 @@ export const readOrders = createServerFn({ method: 'POST' }).middleware([require
   return data ?? [];
 });
 export const updateOrder = createServerFn({ method: 'POST' }).middleware([requireAdmin]).inputValidator(orderUpdateSchema).handler(async ({ context, data }) => {
-  const { id, ...changes } = data;
+  const { id } = data;
+  const changes = {status:data.status,admin_notes:data.admin_notes,archived:data.archived,...(data.customer_name!==undefined?{customer_name:data.customer_name}:{}),...(data.customer_phone!==undefined?{customer_phone:data.customer_phone}:{}),...(data.delivery_address!==undefined?{delivery_address:data.delivery_address}:{})};
   const { data: row, error } = await context.supabase.from('orders').update(changes).eq('id', id).select('id').single();
   if (error || !row) throw new Error('Unable to save order');
   return { ok: true };

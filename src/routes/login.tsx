@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PhoneSignIn } from "@/components/site/PhoneSignIn";
 
 export const Route = createFileRoute("/login")({
-  validateSearch:(s:Record<string,unknown>)=>({next:s["next"]==="cart"?"cart":undefined}),
+  validateSearch:(s:Record<string,unknown>):{next?:string}=>s["next"]==="cart"?{next:"cart"}:{},
   head: () => ({
     meta: [
       { title: "Sign In — تسجيل الدخول | AL-Qurem Fashion" },

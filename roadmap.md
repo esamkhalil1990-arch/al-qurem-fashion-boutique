@@ -1,5 +1,10 @@
 # Roadmap — Port Bolt version into Lovable project
 
+## Twilio WhatsApp OTP
+- [x] Link the owner's Twilio connection; preserve existing customer identities and email access.
+- [x] Review official support: Twilio Verify provider is documented in Cloud phone settings, but WhatsApp delivery through Cloud Auth is not confirmed in Lovable documentation.
+- [ ] Activate and verify WhatsApp login: blocked by unconfirmed Cloud Auth WhatsApp-channel support and required hosted provider setup; do not build a separate authentication system or claim connector linkage activates login.
+
 ## Sign-in refinement
 - [x] Refine phone/email menus, visibility controls, validation, feedback and recovery navigation while preserving guest checkout and owner access.
 - [x] Research free production phone OTP options: no supported ongoing free SMS service to Jordan verified; provider trials are not free production delivery. No new provider connected.

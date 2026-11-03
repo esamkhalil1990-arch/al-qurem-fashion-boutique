@@ -19,3 +19,4 @@
 - Nullable product stock means untracked inventory; tracked stock is locked and deducted atomically at checkout, while cancellations do not automatically restock goods.
 - Homepage and policy overrides use public-readable, admin-writable site_content rows with stable content keys and original defaults; the official logo is never content-editable.
 - Phone OTP is the primary customer login; retain existing email identity access until owner phone linking is verified to avoid owner lockout.
+- Reuse SecretInput for password and verification-code visibility; keep recovery on a public reset-password route so email links work independently of the selected login method.

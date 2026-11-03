@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { useLanguage } from "@/lib/language";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/shop";
 import { useQueryClient } from "@tanstack/react-query";
 import { PhoneSignIn } from "@/components/site/PhoneSignIn";
+import { SecretInput, signInFieldClass } from '@/components/site/SecretInput';
+import { LoaderCircle, Mail, Phone } from 'lucide-react';
 
 export const Route = createFileRoute("/login")({
   validateSearch:(s:Record<string,unknown>):{next?:string}=>s["next"]==="cart"?{next:"cart"}:{},
@@ -26,16 +28,17 @@ export const Route = createFileRoute("/login")({
 function LoginContent() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { user } = useSession();
+  const { user, loading } = useSession();
   const qc = useQueryClient();
   const {next}=Route.useSearch();
   const [ownerLogin,setOwnerLogin]=useState(false);
+  const [phoneBusy, setPhoneBusy] = useState(false);
   const [mode, setMode] = useState<"login" | "signup" | "reset" | "forgot">("login");
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(event => {
-      if (event === 'PASSWORD_RECOVERY') setMode('reset');
+      if (event === 'PASSWORD_RECOVERY') { setMode('reset'); setOwnerLogin(true); }
     });
-    if (window.location.hash.includes('type=recovery')) setMode('reset');
+    if (window.location.hash.includes('type=recovery')) { setMode('reset'); setOwnerLogin(true); }
     return () => data.subscription.unsubscribe();
   }, []);
   const [email, setEmail] = useState("");
@@ -46,11 +49,12 @@ function LoginContent() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setMessage(null);
     try {
       if (mode === 'forgot') {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` });
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
         if (error) throw error;
         setMessage({ kind: 'ok', text: t('إذا كان البريد مسجلاً ستصلك رسالة لإعادة تعيين كلمة المرور.', 'If this email is registered, you will receive a password reset link.') });
       } else if (mode === 'reset') {
@@ -69,9 +73,6 @@ function LoginContent() {
           options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        if (data.user && data.session) {
-          await supabase.from("profiles").upsert({ id: data.user.id, full_name: fullName });
-        }
         if (data.session) {
           navigate({ to: next==="cart"?"/cart":"/" });
         } else {
@@ -89,41 +90,44 @@ function LoginContent() {
       setMessage({
         kind: "error",
         text:
-          err instanceof Error && err.message
-            ? err.message
-            : t("حدث خطأ، حاول مرة أخرى.", "Something went wrong, please try again."),
+          mode === 'login'
+            ? t('تعذر الدخول. تحقق من البريد وكلمة المرور وتأكيد الحساب ثم حاول مرة أخرى.', 'Unable to sign in. Check your email, password and account confirmation, then try again.')
+            : t('تعذر إكمال الطلب. تحقق من البيانات واتصالك ثم حاول مرة أخرى.', 'Unable to complete your request. Check your details and connection, then try again.'),
       });
     } finally {
       setBusy(false);
     }
   }
 
+  function changeMode(value: typeof mode) { setMode(value); setPassword(''); setMessage(null); }
+  if (loading) return <div role="status" className="mx-auto flex max-w-md justify-center py-16"><LoaderCircle className="size-6 motion-safe:animate-spin" aria-label={t('جارٍ التحميل', 'Loading')} /></div>;
   if (user && mode !== 'reset') return <div className="mx-auto max-w-md space-y-5 px-5 pb-24 sm:px-8"><h1 className="text-3xl font-display">{t('حسابي', 'My account')}</h1><p className="break-all" dir="ltr">{user.phone||user.email}</p><Button asChild variant="outline"><a href={next==="cart"?"/cart":"/"}>{t('تابع التسوق', 'Continue shopping')}</a></Button><Button asChild variant="outline"><a href="/orders">{t("طلباتي","My orders")}</a></Button><Button disabled={busy} onClick={async () => { setBusy(true); await qc.cancelQueries(); qc.clear(); const { error } = await supabase.auth.signOut(); setBusy(false); if (error) { setMessage({kind:'error',text:t('تعذر تسجيل الخروج. حاول مرة أخرى.', 'Unable to sign out. Please try again.')}); return; } navigate({to:'/login',replace:true}); }}>{t('تسجيل الخروج', 'Sign out')}</Button>{message?.kind==='error' && <p role="alert" className="text-destructive">{message.text}</p>}</div>;
 
-  if(!ownerLogin&&mode!=="reset")return <div className="mx-auto max-w-md space-y-7 px-5 pb-24 sm:px-8"><h1 className="font-display text-3xl">{t("تسجيل الدخول","Sign in")}</h1><PhoneSignIn onSuccess={()=>navigate({to:next==="cart"?"/cart":"/"})}/><Button variant="link" className="min-h-11" onClick={()=>setOwnerLogin(true)}>{t("دخول الحساب الحالي بالبريد","Existing account email sign-in")}</Button></div>;
-
   return (
-    <div className="mx-auto max-w-md px-5 pb-24 sm:px-8">
-      <h1 className="text-center font-display text-3xl font-semibold tracking-tight">
-        {mode === 'reset' || mode === 'forgot' ? t('إعادة تعيين كلمة المرور','Reset password') : mode === "login" ? t("تسجيل الدخول", "Sign In") : t("إنشاء حساب", "Create Account")}
-      </h1>
-      <p className="mt-3 text-center text-sm text-muted-foreground">
-        {mode==='forgot' ? t('البريد الإلكتروني', 'Email') : mode==='reset' ? t('كلمة المرور الجديدة', 'New password') : t("ادخل بريدك الإلكتروني وكلمة المرور", "Enter your email and password")}
-      </p>
-
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+    <div className="mx-auto max-w-md px-5 pb-20 pt-6 sm:px-8">
+      <h1 className="font-display text-2xl sm:text-3xl">{mode === 'reset' || mode === 'forgot' ? t('إعادة تعيين كلمة المرور', 'Reset password') : mode === 'signup' ? t('إنشاء حساب', 'Create account') : t('تسجيل الدخول', 'Sign in')}</h1>
+      {next === 'cart' && <p className="mt-3 text-sm text-muted-foreground">{t('سجّل الدخول لإتمام طلبك. منتجات سلتك محفوظة.', 'Sign in to complete your order. Your cart is saved.')}</p>}
+      {mode !== 'reset' && <div role="group" aria-label={t('طريقة الدخول', 'Sign-in method')} className="mt-6 grid grid-cols-2 gap-1 border-b border-border pb-3">
+        <Button type="button" disabled={busy || phoneBusy} variant={ownerLogin ? 'ghost' : 'default'} aria-pressed={!ownerLogin} className="h-auto min-h-12 whitespace-normal" onClick={() => { setOwnerLogin(false); changeMode('login'); }}><Phone />{t('رقم الهاتف', 'Phone')}</Button>
+        <Button type="button" disabled={busy || phoneBusy} variant={ownerLogin ? 'default' : 'ghost'} aria-pressed={ownerLogin} className="h-auto min-h-12 whitespace-normal" onClick={() => { setOwnerLogin(true); changeMode('login'); }}><Mail />{t('البريد الإلكتروني', 'Email')}</Button>
+      </div>}
+      <div key={`${ownerLogin}-${mode}`} className="sign-in-panel mt-6">
+      {!ownerLogin && mode !== 'reset' ? <PhoneSignIn onBusyChange={setPhoneBusy} onSuccess={() => navigate({ to: next === 'cart' ? '/cart' : '/' })} /> : <>
+      <form onSubmit={onSubmit} className="space-y-5" aria-busy={busy}>
         {mode === "signup" && (
           <div>
             <label htmlFor="fullName" className="mb-1.5 block text-sm">
               {t("الاسم الكامل", "Full name")}
             </label>
             <input
+              autoComplete="name"
+              disabled={busy}
               id="fullName"
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+              className={signInFieldClass}
             />
           </div>
         )}
@@ -133,32 +137,36 @@ function LoginContent() {
           </label>
           <input
             id="email"
+            autoComplete="email"
+            disabled={busy}
             type="email"
             required
             dir="ltr"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            className={signInFieldClass}
           />
         </div>}
         {mode !== 'forgot' && <div>
           <label htmlFor="password" className="mb-1.5 block text-sm">
             {t("كلمة المرور", "Password")}
           </label>
-          <input
+          <SecretInput
+            key={mode}
             id="password"
-            type="password"
+            disabled={busy}
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             required
             minLength={6}
             dir="ltr"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            className={signInFieldClass}
           />
         </div>}
 
         {message && (
-          <p className={`text-sm ${message.kind === "error" ? "text-destructive" : "text-primary"}`}>
+          <p role={message.kind === "error" ? "alert" : "status"} className={`break-words text-sm ${message.kind === "error" ? "text-destructive" : "text-primary"}`}>
             {message.text}
           </p>
         )}
@@ -166,8 +174,9 @@ function LoginContent() {
         <Button
           type="submit"
           disabled={busy}
-          className="w-full bg-primary px-6 py-3.5 text-sm text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+          className="h-auto min-h-12 w-full whitespace-normal"
         >
+          {busy && <LoaderCircle className="motion-safe:animate-spin" aria-hidden="true" />}
           {busy
             ? t("لحظات...", "One moment...")
             : mode === 'forgot' ? t('إرسال رابط إعادة التعيين', 'Send reset link') : mode === 'reset' ? t('حفظ كلمة المرور','Save password') : mode === "login"
@@ -175,25 +184,28 @@ function LoginContent() {
               : t("إنشاء الحساب", "Create Account")}
         </Button>
       </form>
-      {mode==='login' && <Button variant="link" className="mt-3 min-h-11" onClick={() => {setMode('forgot');setMessage(null);}}>{t('نسيت كلمة المرور؟', 'Forgot password?')}</Button>}
+      {mode==='login' && <Button variant="link" className="mt-3 min-h-11" disabled={busy} onClick={() => changeMode('forgot')}>{t('نسيت كلمة المرور؟', 'Forgot password?')}</Button>}
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {mode === "login" ? (
           <>
             {t("ليس لديك حساب؟", "Don't have an account?")}{" "}
-            <button type="button" onClick={() => setMode("signup")} className="inline-flex min-h-10 items-center px-1 text-primary underline">
+            <Button disabled={busy} type="button" variant="link" onClick={() => changeMode('signup')} className="h-auto min-h-11 px-1">
               {t("إنشاء حساب", "Create one")}
-            </button>
+            </Button>
           </>
         ) : (
           <>
             {t("لديك حساب؟", "Already have an account?")}{" "}
-            <button type="button" onClick={() => setMode("login")} className="inline-flex min-h-10 items-center px-1 text-primary underline">
+            <Button disabled={busy} type="button" variant="link" onClick={() => changeMode('login')} className="h-auto min-h-11 px-1">
               {t("تسجيل الدخول", "Sign in")}
-            </button>
+            </Button>
           </>
         )}
       </p>
+      </>}
+      </div>
+      {mode !== 'reset' && <Button asChild variant="link" className="mt-5 h-auto min-h-11 w-full whitespace-normal"><Link to={next === 'cart' ? '/cart' : '/'}>{t('متابعة التسوق دون تسجيل الدخول', 'Continue shopping without signing in')}</Link></Button>}
     </div>
   );
 }

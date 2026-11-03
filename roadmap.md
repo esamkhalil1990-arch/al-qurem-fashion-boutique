@@ -1,9 +1,10 @@
 # Roadmap — Port Bolt version into Lovable project
 
 ## Sign-in refinement
-- [ ] Refine phone/email menus, visibility controls, validation, feedback and recovery navigation while preserving guest checkout and owner access.
-- [ ] Research free production phone OTP options without replacing customer identities or using insecure test codes.
-- [ ] Verify sign-in transitions, errors, visibility controls and narrow/mobile layouts.
+- [x] Refine phone/email menus, visibility controls, validation, feedback and recovery navigation while preserving guest checkout and owner access.
+- [x] Research free production phone OTP options: no supported ongoing free SMS service to Jordan verified; provider trials are not free production delivery. No new provider connected.
+- [x] Verify sign-in transitions, password visibility, recovery navigation, invalid numbers and overflow at 320/384/430/768/1280px; simulated OTP responses verify code visibility, Arabic keypad, cooldown and expired-code errors. Six tests pass; build clean.
+- [ ] Verify real SMS delivery and sign-in: blocked until owner configures a supported SMS provider and supplies a designated recipient; no unsolicited codes sent.
 
 ## Approved store improvements and guest shopping
 - [x] Add bilingual homepage/photo/policy content editing with original defaults and protected admin writes.

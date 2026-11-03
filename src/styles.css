@@ -151,6 +151,17 @@ html[lang="ar"] {
   font-weight: 500;
 }
 
+.sign-in-panel {
+  animation: sign-in-enter 180ms ease-out;
+}
+@keyframes sign-in-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-panel { animation: none; }
+}
+
 @utility reveal {
   opacity: 0;
   transform: translateY(24px);

@@ -50,7 +50,7 @@ function ResetPassword() {
       <SecretInput id="new-password" autoComplete="new-password" dir="ltr" minLength={6} required value={password} disabled={busy} onChange={e => setPassword(e.target.value)} />
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={busy} className="h-auto min-h-12 w-full whitespace-normal">{busy && <LoaderCircle className="motion-safe:animate-spin" />}{t('حفظ كلمة المرور', 'Save password')}</Button>
-    </form> : <p role="status" className="text-muted-foreground">{t('افتح رابط استعادة كلمة المرور من بريدك، أو اطلب رابطاً جديداً من صفحة الدخول.', 'Open the recovery link from your email, or request a new link from sign-in.')}</p>}
+    </form> : <div className="space-y-4"><p role="status" className="text-muted-foreground">{t('افتح رابط استعادة كلمة المرور من بريدك. إن لم يصلك، اطلب رابطاً جديداً.', 'Open the recovery link from your email. If it did not arrive, request a new one.')}</p><Button asChild variant="outline" className="h-auto min-h-12 w-full whitespace-normal"><Link to="/login" search={{ intent: 'forgot' as const }}>{t('طلب رابط جديد', 'Request a new link')}</Link></Button></div>}
     <Button asChild variant="link" className="min-h-11"><Link to="/login">{t('العودة إلى تسجيل الدخول', 'Back to sign in')}</Link></Button>
   </div>;
 }

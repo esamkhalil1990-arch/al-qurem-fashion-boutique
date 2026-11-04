@@ -65,6 +65,9 @@ export function AdminGate({ children }: { children: ReactNode }) {
               {t(tab.ar, tab.en)}
             </Link>
           ))}
+          <a href="/admin/content?section=Offers" className="-mb-px border-b-2 border-transparent px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-primary">
+            {t("العروض", "Offers")}
+          </a>
         </nav>
         {children}
       </div>

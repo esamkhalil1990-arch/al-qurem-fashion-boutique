@@ -14,7 +14,10 @@ import { LoaderCircle, Mail, MailCheck, Phone } from 'lucide-react';
 type Mode = "login" | "signup" | "reset" | "forgot" | "sent";
 
 export const Route = createFileRoute("/login")({
-  validateSearch:(s:Record<string,unknown>):{next?:string}=>s["next"]==="cart"?{next:"cart"}:{},
+  validateSearch:(s:Record<string,unknown>):{next?:string;intent?:'forgot'}=>({
+    ...(s["next"]==="cart"?{next:"cart" as const}:{}),
+    ...(s["intent"]==="forgot"?{intent:"forgot" as const}:{}),
+  }),
   head: () => ({
     meta: [
       { title: "Sign In — تسجيل الدخول | AL-Qurem Fashion" },
@@ -33,10 +36,10 @@ function LoginContent() {
   const navigate = useNavigate();
   const { user, loading } = useSession();
   const qc = useQueryClient();
-  const {next}=Route.useSearch();
-  const [ownerLogin,setOwnerLogin]=useState(false);
+  const {next, intent}=Route.useSearch();
+  const [ownerLogin,setOwnerLogin]=useState(intent==='forgot');
   const [phoneBusy, setPhoneBusy] = useState(false);
-  const [mode, setMode] = useState<"login" | "signup" | "reset" | "forgot">("login");
+  const [mode, setMode] = useState<Mode>(intent==='forgot'?'forgot':'login');
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(event => {
       if (event === 'PASSWORD_RECOVERY') { setMode('reset'); setOwnerLogin(true); }
@@ -49,6 +52,42 @@ function LoginContent() {
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
+  const [sentEmail, setSentEmail] = useState("");
+  const [sentAt, setSentAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const secondsLeft = resendSecondsLeft(sentAt, now);
+  useEffect(() => {
+    if (mode !== 'sent' || !sentAt || secondsLeft === 0) return;
+    const id = window.setInterval(() => setNow(Date.now()), 500);
+    return () => window.clearInterval(id);
+  }, [mode, sentAt, secondsLeft]);
+
+  function openSent(target: string) {
+    const at = Date.now();
+    setSentEmail(target);
+    setSentAt(at);
+    setNow(at);
+    setMessage(null);
+    setMode('sent');
+  }
+
+  async function resendLink() {
+    if (busy || secondsLeft > 0 || !sentEmail) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(sentEmail, { redirectTo: `${window.location.origin}/reset-password` });
+      if (error) throw error;
+      const at = Date.now();
+      setSentAt(at);
+      setNow(at);
+      setMessage({ kind: 'ok', text: t('أرسلنا رابطاً جديداً إلى بريدك. تفقد بريدك أو مجلد الرسائل غير المرغوبة.', 'We sent a new link to your email. Check your inbox and spam folder.') });
+    } catch {
+      setMessage({ kind: 'error', text: t('تعذر إرسال رابط جديد الآن. انتظر قليلاً ثم حاول مرة أخرى.', 'Unable to send a new link right now. Wait a moment and try again.') });
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -57,9 +96,10 @@ function LoginContent() {
     setMessage(null);
     try {
       if (mode === 'forgot') {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+        const target = email.trim();
+        const { error } = await supabase.auth.resetPasswordForEmail(target, { redirectTo: `${window.location.origin}/reset-password` });
         if (error) throw error;
-        setMessage({ kind: 'ok', text: t('إذا كان البريد مسجلاً ستصلك رسالة لإعادة تعيين كلمة المرور.', 'If this email is registered, you will receive a password reset link.') });
+        openSent(target);
       } else if (mode === 'reset') {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
@@ -95,7 +135,9 @@ function LoginContent() {
         text:
           mode === 'login'
             ? t('تعذر الدخول. تحقق من البريد وكلمة المرور وتأكيد الحساب ثم حاول مرة أخرى.', 'Unable to sign in. Check your email, password and account confirmation, then try again.')
-            : t('تعذر إكمال الطلب. تحقق من البيانات واتصالك ثم حاول مرة أخرى.', 'Unable to complete your request. Check your details and connection, then try again.'),
+            : mode === 'forgot'
+              ? t('تعذر إرسال رابط إعادة التعيين. تحقق من البريد واتصالك بالإنترنت ثم حاول مرة أخرى.', 'Unable to send the reset link. Check your email and internet connection, then try again.')
+              : t('تعذر إكمال الطلب. تحقق من البيانات واتصالك ثم حاول مرة أخرى.', 'Unable to complete your request. Check your details and connection, then try again.'),
       });
     } finally {
       setBusy(false);

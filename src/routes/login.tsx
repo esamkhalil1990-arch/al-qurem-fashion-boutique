@@ -150,14 +150,29 @@ function LoginContent() {
 
   return (
     <div className="mx-auto max-w-md px-5 pb-20 pt-6 sm:px-8">
-      <h1 className="font-display text-2xl sm:text-3xl">{mode === 'reset' || mode === 'forgot' ? t('إعادة تعيين كلمة المرور', 'Reset password') : mode === 'signup' ? t('إنشاء حساب', 'Create account') : t('تسجيل الدخول', 'Sign in')}</h1>
+      <h1 className="font-display text-2xl sm:text-3xl">{mode === 'reset' || mode === 'forgot' ? t('إعادة تعيين كلمة المرور', 'Reset password') : mode === 'sent' ? t('تم إرسال الرابط', 'Link sent') : mode === 'signup' ? t('إنشاء حساب', 'Create account') : t('تسجيل الدخول', 'Sign in')}</h1>
       {next === 'cart' && <p className="mt-3 text-sm text-muted-foreground">{t('سجّل الدخول لإتمام طلبك. منتجات سلتك محفوظة.', 'Sign in to complete your order. Your cart is saved.')}</p>}
-      {mode !== 'reset' && <div role="group" aria-label={t('طريقة الدخول', 'Sign-in method')} className="mt-6 grid grid-cols-2 gap-1 border-b border-border pb-3">
+      {mode !== 'reset' && mode !== 'sent' && <div role="group" aria-label={t('طريقة الدخول', 'Sign-in method')} className="mt-6 grid grid-cols-2 gap-1 border-b border-border pb-3">
         <Button type="button" disabled={busy || phoneBusy} variant={ownerLogin ? 'ghost' : 'default'} aria-pressed={!ownerLogin} className="h-auto min-h-12 whitespace-normal" onClick={() => { setOwnerLogin(false); changeMode('login'); }}><Phone />{t('رقم الهاتف', 'Phone')}</Button>
         <Button type="button" disabled={busy || phoneBusy} variant={ownerLogin ? 'default' : 'ghost'} aria-pressed={ownerLogin} className="h-auto min-h-12 whitespace-normal" onClick={() => { setOwnerLogin(true); changeMode('login'); }}><Mail />{t('البريد الإلكتروني', 'Email')}</Button>
       </div>}
       <div key={`${ownerLogin}-${mode}`} className="sign-in-panel mt-6">
-      {!ownerLogin && mode !== 'reset' ? <PhoneSignIn onBusyChange={setPhoneBusy} onSuccess={() => navigate({ to: next === 'cart' ? '/cart' : '/' })} /> : <>
+      {mode === 'sent' ? <div className="space-y-5">
+        <div role="status" className="flex items-start gap-3 rounded-md border border-primary/25 bg-primary/5 p-4">
+          <MailCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+          <div className="min-w-0 space-y-1.5">
+            <p className="font-medium">{t('تم إرسال رابط إعادة التعيين إلى بريدك.', 'We sent a password reset link to your email.')}</p>
+            <p className="break-all text-sm" dir="ltr">{sentEmail}</p>
+            <p className="text-sm text-muted-foreground">{t('يصل الرابط عادةً خلال دقائق. إن لم يصلك، تفقد مجلد الرسائل غير المرغوبة أو غير المؤهّلة.', 'The link usually arrives within a few minutes. If it does not, check your spam or junk folder.')}</p>
+          </div>
+        </div>
+        {message && <p role={message.kind === 'error' ? 'alert' : 'status'} className={`break-words text-sm ${message.kind === 'error' ? 'text-destructive' : 'text-primary'}`}>{message.text}</p>}
+        <Button type="button" onClick={resendLink} disabled={busy || secondsLeft > 0} className="h-auto min-h-12 w-full whitespace-normal">
+          {busy && <LoaderCircle className="motion-safe:animate-spin" aria-hidden="true" />}
+          {secondsLeft > 0 ? t(`يمكنك طلب رابط جديد بعد ${secondsLeft} ثانية`, `You can request a new link in ${secondsLeft}s`) : t('إرسال رابط جديد', 'Send a new link')}
+        </Button>
+        <Button type="button" variant="link" className="min-h-11 w-full whitespace-normal" disabled={busy} onClick={() => changeMode('login')}>{t('العودة إلى تسجيل الدخول', 'Back to sign in')}</Button>
+      </div> : !ownerLogin && mode !== 'reset' ? <PhoneSignIn onBusyChange={setPhoneBusy} onSuccess={() => navigate({ to: next === 'cart' ? '/cart' : '/' })} /> : <>
       <form onSubmit={onSubmit} className="space-y-5" aria-busy={busy}>
         {mode === "signup" && (
           <div>
@@ -250,7 +265,7 @@ function LoginContent() {
       </p>
       </>}
       </div>
-      {mode !== 'reset' && <Button asChild variant="link" className="mt-5 h-auto min-h-11 w-full whitespace-normal"><Link to={next === 'cart' ? '/cart' : '/'}>{t('متابعة التسوق دون تسجيل الدخول', 'Continue shopping without signing in')}</Link></Button>}
+      {mode !== 'reset' && mode !== 'sent' && <Button asChild variant="link" className="mt-5 h-auto min-h-11 w-full whitespace-normal"><Link to={next === 'cart' ? '/cart' : '/'}>{t('متابعة التسوق دون تسجيل الدخول', 'Continue shopping without signing in')}</Link></Button>}
     </div>
   );
 }

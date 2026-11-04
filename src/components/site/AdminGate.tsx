@@ -9,7 +9,6 @@ const TABS = [
   { to: "/admin", ar: "معلومات المحل", en: "Shop details" },
   { to: "/admin/products", ar: "المنتجات", en: "Products" },
   { to: "/admin/content", ar: "محتوى الموقع", en: "Store content" },
-  { to: "/admin/content?section=Offers", ar: "العروض", en: "Offers" },
   { to: "/admin/orders", ar: "الطلبات", en: "Orders" },
   { to: "/admin/accounts", ar: "الحسابات", en: "Accounts" },
 ] as const;
@@ -66,6 +65,9 @@ export function AdminGate({ children }: { children: ReactNode }) {
               {t(tab.ar, tab.en)}
             </Link>
           ))}
+          <a href="/admin/content?section=Offers" className="-mb-px border-b-2 border-transparent px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-primary">
+            {t("العروض", "Offers")}
+          </a>
         </nav>
         {children}
       </div>

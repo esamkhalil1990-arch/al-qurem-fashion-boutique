@@ -8,7 +8,10 @@ import { useSession } from "@/lib/shop";
 import { useQueryClient } from "@tanstack/react-query";
 import { PhoneSignIn } from "@/components/site/PhoneSignIn";
 import { SecretInput, signInFieldClass } from '@/components/site/SecretInput';
-import { LoaderCircle, Mail, Phone } from 'lucide-react';
+import { resendSecondsLeft } from '@/lib/auth-input';
+import { LoaderCircle, Mail, MailCheck, Phone } from 'lucide-react';
+
+type Mode = "login" | "signup" | "reset" | "forgot" | "sent";
 
 export const Route = createFileRoute("/login")({
   validateSearch:(s:Record<string,unknown>):{next?:string}=>s["next"]==="cart"?{next:"cart"}:{},

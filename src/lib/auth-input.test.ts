@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeCode } from './auth-input';
+import { normalizeCode, resendSecondsLeft } from './auth-input';
 
 describe('Verification code input', () => {
   it('accepts Arabic and Persian keypad digits', () => {

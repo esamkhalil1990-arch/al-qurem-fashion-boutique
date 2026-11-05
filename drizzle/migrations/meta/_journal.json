@@ -36,6 +36,13 @@
       "when": 1793516142197,
       "tag": "0004_atomic_guest_cart_checkout",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793893565968,
+      "tag": "0005_profile_address",
+      "breakpoints": true
     }
   ]
 }

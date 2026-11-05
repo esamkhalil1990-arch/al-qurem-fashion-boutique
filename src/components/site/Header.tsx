@@ -128,7 +128,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
             </Link>
           )}
           <Link
-            to="/login"
+            to={user ? "/account" : "/login"}
             className={iconBtn}
             aria-label={user ? t("حسابي", "My account") : t("تسجيل الدخول", "Sign in")}
           >
@@ -217,6 +217,14 @@ export function Header({ solid = false }: { solid?: boolean }) {
               ))}
             </nav>
             <div className="mt-10 flex flex-col gap-4 border-t border-border pt-6">
+              <Link
+                to={user ? "/account" : "/login"}
+                onClick={() => setOpen(false)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 bg-primary text-sm text-primary-foreground"
+              >
+                <User className="h-4 w-4" aria-hidden="true" />
+                {user ? t("إعدادات الحساب", "Account settings") : t("تسجيل الدخول", "Sign in")}
+              </Link>
               <div className="flex border border-border text-sm" role="group" aria-label={t("اللغة", "Language")}>
                 {(["ar", "en"] as const).map((code) => (
                   <button

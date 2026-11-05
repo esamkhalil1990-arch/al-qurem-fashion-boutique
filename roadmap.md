@@ -56,3 +56,8 @@
 - [x] Verify and obtain the authentic official store logo from the owner's share link and matching store profile photo.
 - [x] Replace header and opening-section marks with the same original asset, preserving static header and animated reveal.
 - [x] Verify both placements, progressive reveal and reduced-motion fallback, clean build, and mobile layout without overflow.
+
+## Password recovery confirmation
+- [x] Show a clear confirmation with the addressed email after a reset link is requested.
+- [x] Add a resend action with a 30-second cooldown and a new-link confirmation, plus a request-a-new-link route from the reset page.
+- [x] Verify send, cooldown, resend, back-to-sign-in, both languages, and 320/384/430px layouts in the browser; four helper tests pass.

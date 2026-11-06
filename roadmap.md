@@ -1,5 +1,9 @@
 # Roadmap — Port Bolt version into Lovable project
 
+## Password rejection clarity
+- [x] Distinguish required length, character types, breached passwords and unchanged passwords across signup, recovery and account settings.
+- [x] Eight helper tests pass; simulated signup rejection displays the specific character requirement at 320px without overflow; build is clean. No real password was changed. Hosted minimum length and required characters remain unverified, owner-managed settings, not editable through agent tools.
+
 ## Twilio WhatsApp OTP
 - [x] Link the owner's Twilio connection; preserve existing customer identities and email access.
 - [x] Review official support: Twilio Verify provider is documented in Cloud phone settings, but WhatsApp delivery through Cloud Auth is not confirmed in Lovable documentation.

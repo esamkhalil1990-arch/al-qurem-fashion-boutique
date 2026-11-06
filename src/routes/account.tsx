@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { passwordErrorMessage } from '@/lib/auth-input';
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -37,10 +38,11 @@ function AccountPage() {
     queryKey: ["my-profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+        if (!user) return null;
+        const { data, error } = await supabase
         .from("profiles")
         .select("full_name, phone, address")
-        .eq("id", user!.id)
+        .eq("id", user.id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -94,7 +96,7 @@ function AccountPage() {
     setSavingPw(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     setSavingPw(false);
-    if (error) setPwMsg({ ok: false, text: t("تعذر تغيير كلمة المرور: ", "Could not change password: ") + error.message });
+    if (error) setPwMsg({ ok: false, text: passwordErrorMessage(error, t, t('تعذر تغيير كلمة المرور. حاول مجدداً أو استخدم رابط استعادة كلمة المرور.', 'Could not change your password. Try again or use a password recovery link.')) });
     else {
       setPw(""); setPw2("");
       setPwMsg({ ok: true, text: t("تم تغيير كلمة المرور.", "Password changed.") });

@@ -8,7 +8,7 @@ import { useSession } from "@/lib/shop";
 import { useQueryClient } from "@tanstack/react-query";
 import { PhoneSignIn } from "@/components/site/PhoneSignIn";
 import { SecretInput, signInFieldClass } from '@/components/site/SecretInput';
-import { resendSecondsLeft } from '@/lib/auth-input';
+import { passwordErrorMessage, resendSecondsLeft } from '@/lib/auth-input';
 import { LoaderCircle, Mail, MailCheck, Phone } from 'lucide-react';
 
 type Mode = "login" | "signup" | "reset" | "forgot" | "sent";
@@ -137,7 +137,7 @@ function LoginContent() {
             ? t('تعذر الدخول. تحقق من البريد وكلمة المرور وتأكيد الحساب ثم حاول مرة أخرى.', 'Unable to sign in. Check your email, password and account confirmation, then try again.')
             : mode === 'forgot'
               ? t('تعذر إرسال رابط إعادة التعيين. تحقق من البريد واتصالك بالإنترنت ثم حاول مرة أخرى.', 'Unable to send the reset link. Check your email and internet connection, then try again.')
-              : t('تعذر إكمال الطلب. تحقق من البيانات واتصالك ثم حاول مرة أخرى.', 'Unable to complete your request. Check your details and connection, then try again.'),
+               : passwordErrorMessage(err, t, t('تعذر إكمال الطلب. تحقق من البيانات واتصالك ثم حاول مرة أخرى.', 'Unable to complete your request. Check your details and connection, then try again.')),
       });
     } finally {
       setBusy(false);

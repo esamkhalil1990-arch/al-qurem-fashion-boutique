@@ -6,6 +6,7 @@ import { PageLayout } from '@/components/site/PageLayout';
 import { SecretInput } from '@/components/site/SecretInput';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
+import { passwordErrorMessage } from '@/lib/auth-input';
 
 export const Route = createFileRoute('/reset-password')({
   head: () => ({ meta: [
@@ -40,7 +41,7 @@ function ResetPassword() {
       const { error: authError } = await supabase.auth.updateUser({ password });
       if (authError) throw authError;
       setSaved(true); setPassword('');
-    } catch { setError(t('تعذر حفظ كلمة المرور. تأكد من صلاحية رابط الاستعادة وحاول مجدداً.', 'Unable to save your password. Check that your recovery link is still valid and try again.')); }
+    } catch (err) { setError(passwordErrorMessage(err, t, t('تعذر حفظ كلمة المرور. تأكد من صلاحية رابط الاستعادة وحاول مجدداً.', 'Unable to save your password. Check that your recovery link is still valid and try again.'))); }
     finally { setBusy(false); }
   }
   return <div className="mx-auto max-w-md space-y-6 px-5 pb-20 pt-6 sm:px-8">

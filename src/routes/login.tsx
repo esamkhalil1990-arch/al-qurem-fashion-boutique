@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PhoneSignIn } from "@/components/site/PhoneSignIn";
 import { SecretInput, signInFieldClass } from '@/components/site/SecretInput';
 import { passwordErrorMessage, resendSecondsLeft } from '@/lib/auth-input';
+import { PasswordChecklist, usePasswordPolicy } from '@/components/site/PasswordChecklist';
 import { LoaderCircle, Mail, MailCheck, Phone } from 'lucide-react';
 
 type Mode = "login" | "signup" | "reset" | "forgot" | "sent";
@@ -51,6 +52,7 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const pp = usePasswordPolicy();
   const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [sentEmail, setSentEmail] = useState("");
   const [sentAt, setSentAt] = useState<number | null>(null);
@@ -130,6 +132,7 @@ function LoginContent() {
         }
       }
     } catch (err) {
+      if (mode === 'signup' || mode === 'reset') pp.learn(err);
       setMessage({
         kind: "error",
         text:
@@ -205,7 +208,9 @@ function LoginContent() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={signInFieldClass}
+            aria-describedby={mode === 'login' ? undefined : 'login-pw-rules'}
           />
+          {mode !== 'login' && <div className="mt-2"><PasswordChecklist id="login-pw-rules" password={password} policy={pp.policy} /></div>}
         </div>}
         {mode !== 'forgot' && <div>
           <label htmlFor="password" className="mb-1.5 block text-sm">

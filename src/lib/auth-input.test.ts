@@ -41,3 +41,15 @@ describe('Recovery link resend cooldown', () => {
     expect(resendSecondsLeft(9000, 8000)).toBe(30);
   });
 });
+import { checkPassword, policyFromError, DEFAULT_PASSWORD_POLICY } from './auth-input';
+describe('password checklist policy', () => {
+  it('defaults to a 6-character minimum', () => {
+    expect(checkPassword('abcde', DEFAULT_PASSWORD_POLICY).length).toBe(false);
+    expect(checkPassword('abcdef', DEFAULT_PASSWORD_POLICY).length).toBe(true);
+  });
+  it('learns required character types from a hosted rejection', () => {
+    const p = policyFromError({ message: 'Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};\':"|<>?,./`~' }, DEFAULT_PASSWORD_POLICY);
+    expect(p.chars).toEqual(['lower', 'upper', 'digit', 'symbol']);
+    expect(checkPassword('Kkhisya76', p).symbol).toBe(false);
+  });
+});

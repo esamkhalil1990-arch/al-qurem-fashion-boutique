@@ -7,6 +7,7 @@ import { SecretInput } from '@/components/site/SecretInput';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/language';
 import { passwordErrorMessage } from '@/lib/auth-input';
+import { PasswordChecklist, usePasswordPolicy } from '@/components/site/PasswordChecklist';
 
 export const Route = createFileRoute('/reset-password')({
   head: () => ({ meta: [
@@ -26,6 +27,7 @@ function ResetPassword() {
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const pp = usePasswordPolicy();
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(event => {
       if (event === 'PASSWORD_RECOVERY') setValid(true);
@@ -41,14 +43,15 @@ function ResetPassword() {
       const { error: authError } = await supabase.auth.updateUser({ password });
       if (authError) throw authError;
       setSaved(true); setPassword('');
-    } catch (err) { setError(passwordErrorMessage(err, t, t('تعذر حفظ كلمة المرور. تأكد من صلاحية رابط الاستعادة وحاول مجدداً.', 'Unable to save your password. Check that your recovery link is still valid and try again.'))); }
+    } catch (err) { pp.learn(err); setError(passwordErrorMessage(err, t, t('تعذر حفظ كلمة المرور. تأكد من صلاحية رابط الاستعادة وحاول مجدداً.', 'Unable to save your password. Check that your recovery link is still valid and try again.'))); }
     finally { setBusy(false); }
   }
   return <div className="mx-auto max-w-md space-y-6 px-5 pb-20 pt-6 sm:px-8">
     <h1 className="font-display text-2xl">{t('إعادة تعيين كلمة المرور', 'Reset password')}</h1>
     {saved ? <p role="status">{t('تم حفظ كلمة المرور الجديدة.', 'Your new password has been saved.')}</p> : valid ? <form onSubmit={submit} className="space-y-5" aria-busy={busy}>
       <label htmlFor="new-password" className="block text-sm">{t('كلمة المرور الجديدة', 'New password')}</label>
-      <SecretInput id="new-password" autoComplete="new-password" dir="ltr" minLength={6} required value={password} disabled={busy} onChange={e => setPassword(e.target.value)} />
+      <SecretInput id="new-password" autoComplete="new-password" dir="ltr" minLength={6} required value={password} disabled={busy} onChange={e => setPassword(e.target.value)} aria-describedby="pw-rules" />
+      <PasswordChecklist id="pw-rules" password={password} policy={pp.policy} />
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={busy} className="h-auto min-h-12 w-full whitespace-normal">{busy && <LoaderCircle className="motion-safe:animate-spin" />}{t('حفظ كلمة المرور', 'Save password')}</Button>
     </form> : <div className="space-y-4"><p role="status" className="text-muted-foreground">{t('افتح رابط استعادة كلمة المرور من بريدك. إن لم يصلك، اطلب رابطاً جديداً.', 'Open the recovery link from your email. If it did not arrive, request a new one.')}</p><Button asChild variant="outline" className="h-auto min-h-12 w-full whitespace-normal"><Link to="/login" search={{ intent: 'forgot' as const }}>{t('طلب رابط جديد', 'Request a new link')}</Link></Button></div>}

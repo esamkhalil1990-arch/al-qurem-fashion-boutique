@@ -34,3 +34,32 @@ export function normalizeCode(value: string) {
     return String(code >= 0x6f0 ? code - 0x6f0 : code - 0x660);
   }).replace(/\D/g, '').slice(0, 8);
 }
+export type CharRule = 'lower' | 'upper' | 'digit' | 'symbol';
+export type PasswordPolicy = { minLength: number; chars: CharRule[] };
+export const DEFAULT_PASSWORD_POLICY: PasswordPolicy = { minLength: 6, chars: [] };
+const POLICY_KEY = 'alqurem-password-policy';
+
+/** Learn the hosted policy from a rejection message so the checklist mirrors real settings. */
+export function policyFromError(error: unknown, current: PasswordPolicy): PasswordPolicy {
+  const message = error && typeof error === 'object' && typeof (error as { message?: unknown }).message === 'string' ? (error as { message: string }).message : '';
+  const chars = new Set(current.chars);
+  if (/password should contain/i.test(message)) {
+    if (message.includes('abcdefghijklmnopqrstuvwxyz')) chars.add('lower');
+    if (message.includes('ABCDEFGHIJKLMNOPQRSTUVWXYZ')) chars.add('upper');
+    if (message.includes('0123456789')) chars.add('digit');
+    if (/[!@#$%^&*]/.test(message.split(/each:/i)[1] ?? '')) chars.add('symbol');
+  }
+  const min = message.match(/at least (\d+) characters/i);
+  return { minLength: Math.max(current.minLength, min ? Number(min[1]) : 0), chars: (['lower', 'upper', 'digit', 'symbol'] as CharRule[]).filter(c => chars.has(c)) };
+}
+
+export function checkPassword(pw: string, policy: PasswordPolicy) {
+  const tests: Record<CharRule, RegExp> = { lower: /[a-z]/, upper: /[A-Z]/, digit: /[0-9]/, symbol: /[^A-Za-z0-9\s]/ };
+  return { length: [...pw].length >= policy.minLength, ...Object.fromEntries(policy.chars.map(c => [c, tests[c].test(pw)])) } as { length: boolean } & Partial<Record<CharRule, boolean>>;
+}
+
+export function loadPasswordPolicy(): PasswordPolicy {
+  try { const v = JSON.parse(localStorage.getItem(POLICY_KEY) ?? 'null'); if (v && typeof v.minLength === 'number' && Array.isArray(v.chars)) return v; } catch { /* ignore */ }
+  return DEFAULT_PASSWORD_POLICY;
+}
+export function savePasswordPolicy(p: PasswordPolicy) { try { localStorage.setItem(POLICY_KEY, JSON.stringify(p)); } catch { /* ignore */ } }

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { passwordErrorMessage } from '@/lib/auth-input';
+import { PasswordChecklist, usePasswordPolicy } from '@/components/site/PasswordChecklist';
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -56,6 +57,7 @@ function AccountPage() {
   const [pw2, setPw2] = useState("");
   const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [savingPw, setSavingPw] = useState(false);
+  const pp = usePasswordPolicy();
 
   useEffect(() => {
     if (profile.isSuccess) {
@@ -91,11 +93,12 @@ function AccountPage() {
   const savePw = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwMsg(null);
-    if (pw.length < 6) return setPwMsg({ ok: false, text: t("كلمة المرور 6 أحرف على الأقل.", "Password must be at least 6 characters.") });
+    if (!pp.met(pw)) return setPwMsg({ ok: false, text: t("كلمة المرور لا تستوفي كل الشروط في القائمة.", "Your password doesn't meet every requirement in the list.") });
     if (pw !== pw2) return setPwMsg({ ok: false, text: t("كلمتا المرور غير متطابقتين.", "Passwords do not match.") });
     setSavingPw(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     setSavingPw(false);
+    if (error) pp.learn(error);
     if (error) setPwMsg({ ok: false, text: passwordErrorMessage(error, t, t('تعذر تغيير كلمة المرور. حاول مجدداً أو استخدم رابط استعادة كلمة المرور.', 'Could not change your password. Try again or use a password recovery link.')) });
     else {
       setPw(""); setPw2("");
@@ -138,7 +141,8 @@ function AccountPage() {
         <h2 className="font-display text-xl">{t("تغيير كلمة المرور", "Change password")}</h2>
         <div className="space-y-2">
           <Label htmlFor="acc-pw">{t("كلمة المرور الجديدة", "New password")}</Label>
-          <SecretInput id="acc-pw" value={pw} autoComplete="new-password" onChange={(e) => setPw(e.target.value)} />
+          <SecretInput id="acc-pw" value={pw} autoComplete="new-password" onChange={(e) => setPw(e.target.value)} aria-describedby="acc-pw-rules" />
+          <PasswordChecklist id="acc-pw-rules" password={pw} policy={pp.policy} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="acc-pw2">{t("تأكيد كلمة المرور", "Confirm password")}</Label>

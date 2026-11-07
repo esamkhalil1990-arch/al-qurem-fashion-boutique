@@ -135,6 +135,7 @@ export function Header({ solid = false }: { solid?: boolean }) {
           >
             <User className={`h-5 w-5 ${user ? "fill-current" : ""}`} aria-hidden="true" />
           </Link>
+          <ThemeToggle className={iconBtn} />
           <div
             className={`hidden items-center border text-xs sm:flex ${
               onDark ? "border-ivory/40" : "border-border"
@@ -226,6 +227,10 @@ export function Header({ solid = false }: { solid?: boolean }) {
                 <User className="h-4 w-4" aria-hidden="true" />
                 {user ? t("إعدادات الحساب", "Account settings") : t("تسجيل الدخول", "Sign in")}
               </Link>
+              <ThemeToggle
+                showLabel
+                className="inline-flex min-h-11 items-center justify-center gap-2 border border-border text-sm text-foreground"
+              />
               <div className="flex border border-border text-sm" role="group" aria-label={t("اللغة", "Language")}>
                 {(["ar", "en"] as const).map((code) => (
                   <button
